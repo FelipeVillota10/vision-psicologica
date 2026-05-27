@@ -1,7 +1,7 @@
 <template>
   <div class="register-container">
     <div class="register-card">
-      <h2>Crea un cliente</h2>
+      <h2>Crea un usuario</h2>
       <p class="subtitle">Ingresa los datos del nuevo usuario</p>
 
       <form @submit.prevent>
@@ -26,17 +26,17 @@
         </div>
 
         <div class="form-group">
-          <label for="direccion">Dirección:</label>
+          <label for="contrasena">Contraseña:</label>
           <input
             type="text"
-            id="direccion"
-            v-model="form.direccion"
-            placeholder="Dirección de residencia"
+            id="contrasena"
+            v-model="form.contrasena"
+            placeholder="Contraseña de usuario"
           />
         </div>
 
         <div class="button-group">
-          <button type="button" class="btn-create">Crear</button>
+          <button type="button" class="btn-create" @click="manejarRegistro">Crear</button>
           <button type="button" class="btn-clear" @click="limpiarFormulario">Limpiar</button>
           <button type="button" class="btn-delete">Borrar</button>
         </div>
@@ -47,19 +47,39 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useAuthStore } from '../stores/auth'
+
+const authStore = useAuthStore()
 
 const form = ref({
   nombre: '',
   identificacion: '',
   email: '',
-  direccion: '',
+  contrasena: '',
 })
+
+const manejarRegistro = async () => {
+  if (!form.value.nombre || !form.value.identificacion || !form.value.email) {
+    alert('Por favor, llena los campos obligatorios.')
+    return
+  }
+
+  const exito = await authStore.registrarUsuario({
+    nombre: form.value.nombre,
+    identificacion: form.value.identificacion,
+    email: form.value.email,
+    contrasena: form.value.contrasena,
+  })
+  if (exito) {
+    limpiarFormulario()
+  }
+}
 
 const limpiarFormulario = () => {
   form.value.nombre = ''
   form.value.identificacion = ''
   form.value.email = ''
-  form.value.direccion = ''
+  form.value.contrasena = ''
 }
 </script>
 
