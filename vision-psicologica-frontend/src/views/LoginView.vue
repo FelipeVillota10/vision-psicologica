@@ -6,6 +6,7 @@
         <div class="lp-left">
           <img src="@/assets/mariposa.png" alt="Logo Visión Psicológica" class="lp-logo" />
           <h1 class="lp-title">Visión Psicológica</h1>
+          <h2 class="lp-title ">TM</h2>
         </div>
 
         <div class="lp-right">
@@ -45,12 +46,12 @@ const registrar = () => { /* lógica registro */ }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #e0f7f4 0%, #ede8fb 100%);
+  background: linear-gradient(135deg, #e4bef3 0%, #baf5f2 100%);
   padding: 2rem;
   box-sizing: border-box;
 }
 .lp-card {
-  background: #fff;
+  background: #e7f3ef;
   border-radius: 20px;
   padding: 10.0rem 5.8rem 6rem;
   width: 300%;
@@ -75,7 +76,7 @@ const registrar = () => { /* lógica registro */ }
 .lp-field {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 30px;
   margin-bottom: 1rem;
 }
 .lp-label {

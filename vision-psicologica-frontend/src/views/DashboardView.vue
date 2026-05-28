@@ -1,50 +1,70 @@
 <template>
   <div class="dashboard-container">
+    <!-- Header con logo y título -->
     <header class="main-header">
-      <h1>Visión Psicológica</h1>
+      <div class="header-content">
+        <img src="@/assets/mariposa.png" alt="Visión Psicológica" class="header-logo" />
+        <h1>Visión Psicológica TM</h1>
+      </div>
     </header>
 
     <div class="workspace">
       <aside class="sidebar">
         <ul class="menu-list">
-          <li class="menu-item-simple">Citas</li>
+          <!-- Citas -->
+          <li class="menu-item-simple">
+            <span class="menu-icon">📅</span>
+            Citas
+          </li>
 
+          <!-- Historias -->
           <li class="menu-item" @click="toggleMenu('historias')">
             <div class="menu-title">
-              Historias <span>{{ menus.historias ? '▼' : '►' }}</span>
+              <span class="menu-icon">📖</span>
+              Historias 
+              <span class="arrow">{{ menus.historias ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.historias" class="submenu" @click.stop>
-              <li>Crear</li>
-              <li>Buscar</li>
+              <li>Crear Historia</li>
+              <li>Buscar Historia</li>
             </ul>
           </li>
 
+          <!-- Clientes -->
           <li class="menu-item" @click="toggleMenu('clientes')">
             <div class="menu-title">
-              Clientes <span>{{ menus.clientes ? '▼' : '►' }}</span>
+              <span class="menu-icon">👤</span>
+              Clientes 
+              <span class="arrow">{{ menus.clientes ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.clientes" class="submenu" @click.stop>
-              <li>Crear</li>
-              <li>Buscar</li>
+              <li>Crear Cliente</li>
+              <li>Buscar Cliente</li>
             </ul>
           </li>
 
+          <!-- Ordenamiento -->
           <li class="menu-item" @click="toggleMenu('ordenamiento')">
             <div class="menu-title">
-              Ordenamiento <span>{{ menus.ordenamiento ? '▼' : '►' }}</span>
+              <span class="menu-icon">📋</span>
+              Ordenamiento 
+              <span class="arrow">{{ menus.ordenamiento ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.ordenamiento" class="submenu" @click.stop>
               <li>Remisiones</li>
             </ul>
           </li>
 
+          <!-- Afiliados -->
           <li class="menu-item" @click="toggleMenu('afiliados')">
             <div class="menu-title">
-              Afiliados <span>{{ menus.afiliados ? '▼' : '►' }}</span>
+              <span class="menu-icon">🤝</span>
+              Afiliados 
+              <span class="arrow">{{ menus.afiliados ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.afiliados" class="submenu" @click.stop>
-              <li>Crear</li>
-              <li>Buscar</li>
+              <li>Crear Afiliado</li>
+              <li>Buscar Afiliado</li>
             </ul>
           </li>
         </ul>
@@ -52,7 +72,7 @@
 
       <main class="main-content">
         <div class="welcome-box">
-          <h2>Bienvenido</h2>
+          <h2>Bienvenido/a <span class="user-name"></span></h2>
           <p>Por favor, elija una opción del menú de la izquierda.</p>
         </div>
       </main>
@@ -63,7 +83,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// Definimos un objeto reactivo con TypeScript para rastrear qué menús están abiertos (true) o cerrados (false)
 const menus = ref({
   historias: false,
   clientes: false,
@@ -71,46 +90,62 @@ const menus = ref({
   afiliados: false,
 })
 
-// Función para alternar el estado del menú seleccionado
 const toggleMenu = (menuName: 'historias' | 'clientes' | 'ordenamiento' | 'afiliados') => {
   menus.value[menuName] = !menus.value[menuName]
 }
 </script>
 
 <style scoped>
-/* Estructura general de la pantalla */
+/* ====================== HEADER ====================== */
 .dashboard-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-/* Estilo del Bloque Superior */
 .main-header {
-  background-color: #2c3e50;
-  color: white;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #d3d4f5;
+  color: rgb(0, 0, 0);
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-logo {
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
 }
 
 .main-header h1 {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 1.9rem;
+  font-weight: 600;
 }
 
-/* Contenedor del área de trabajo */
+/* ====================== SIDEBAR ====================== */
 .workspace {
   display: flex;
-  flex: 1; /* Ocupa todo el espacio restante abajo del header */
+  flex: 1;
 }
 
-/* Estilo del Bloque Izquierdo (Sidebar) */
 .sidebar {
-  width: 260px;
-  background-color: #34495e;
-  color: #ecf0f1;
-  padding-top: 1rem;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  width: 280px;
+  background-color: #d3d4f5;
+  color: #000000;
+  padding-top: 0;
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  border-top: 1px solid #1e1e1e;
+  border-right: 1px solid #1e1e1e;
+  border-left: 1px solid #1e1e1e;
 }
 
 .menu-list {
@@ -119,92 +154,95 @@ const toggleMenu = (menuName: 'historias' | 'clientes' | 'ordenamiento' | 'afili
   margin: 0;
 }
 
-.menu-item-simple {
+/* Estilos para iconos */
+.menu-icon {
+  display: inline-block;
+  width: 24px;
+  margin-right: 12px;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+.menu-item-simple,
+.menu-title {
   padding: 1rem 1.5rem;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
-  border-bottom: 1px solid #2c3e50;
+  border-bottom: 1px solid #344a73;
   transition: background 0.2s;
-}
-
-.menu-item-simple:hover {
-  background-color: #2c3e50;
-}
-
-.menu-item {
-  border-bottom: 1px solid #2c3e50;
+  display: flex;
+  align-items: center;
 }
 
 .menu-title {
-  padding: 1rem 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  user-select: none;
 }
 
+.arrow {
+  margin-left: auto;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.menu-item-simple:hover,
 .menu-title:hover {
-  background-color: #2c3e50;
+  background-color: #b8b9e0;
 }
 
-.menu-title span {
-  font-size: 0.8rem;
-  color: #bdc3c7;
-}
-
-/* Submenús desplegables */
 .submenu {
   list-style: none;
   padding: 0;
-  background-color: #2c3e50;
+  background-color: #c5c6eb;
 }
 
 .submenu li {
-  padding: 0.75rem 2.5rem;
+  padding: 0.85rem 2.8rem;
   cursor: pointer;
-  font-size: 0.95rem;
-  color: #bdc3c7;
-  transition:
-    color 0.2s,
-    background 0.2s;
+  color: #2c2c2c;
+  transition: all 0.2s;
 }
 
 .submenu li:hover {
-  background-color: #1a252f;
-  color: white;
+  background-color: #a8a9d8;
+  color: black;
+  padding-left: 3rem;
 }
 
-/* Estilo del Bloque Derecho (Main Content) */
+/* ====================== MAIN CONTENT ====================== */
 .main-content {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f4f6f9;
+  background-color: #e0f5f5;
   padding: 2rem;
 }
 
 .welcome-box {
   text-align: center;
-  background: white;
-  padding: 3rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  max-width: 500px;
+  background: #e0f5f5;
+  padding: 4rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(48, 48, 48, 0.08);
+  max-width: 520px;
   width: 100%;
 }
 
 .welcome-box h2 {
-  color: #2c3e50;
-  margin-top: 0;
-  font-size: 2rem;
+  color: #1e3a5f;
+  font-size: 2.2rem;
+  margin: 0 0 1rem 0;
+}
+
+.user-name {
+  color: #2c8a6e;
+  font-weight: 500;
 }
 
 .welcome-box p {
-  color: #7f8c8d;
-  font-size: 1.1rem;
-  margin-bottom: 0;
+  color: #5f6b7a;
+  font-size: 1.15rem;
 }
+
+/* mondongo 🗣*/
 </style>
