@@ -1,163 +1,134 @@
 <template>
-  <div class="login-container">
-    <div class="login-card">
-      <h2>Visión Psicológica</h2>
-      <p class="subtitle">Control de Acceso</p>
+  <div class="lp-wrap">
+    <div class="lp-card">
+      <div class="lp-layout">
 
-      <form @submit.prevent="manejarLogin">
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            v-model="email"
-            placeholder="ejemplo@correo.com"
-            required
-          />
+        <div class="lp-left">
+          <img src="@/assets/mariposa.png" alt="Logo Visión Psicológica" class="lp-logo" />
+          <h1 class="lp-title">Visión Psicológica</h1>
         </div>
 
-        <div class="form-group">
-          <label for="password">Contraseña:</label>
-          <input
-            type="password"
-            id="password"
-            v-model="contrasena"
-            placeholder="********"
-            required
-          />
+        <div class="lp-right">
+          <div class="lp-field">
+            <label class="lp-label">Correo</label>
+            <input v-model="email" class="lp-input" type="email" placeholder="ejemplo@correo.com" />
+          </div>
+          <div class="lp-field">
+            <label class="lp-label">Contraseña</label>
+            <input v-model="password" class="lp-input" type="password" placeholder="••••••••" />
+          </div>
+          <a class="lp-forgot" href="#">¿Olvidaste la contraseña?</a>
+          
+          <!-- Botones con separación -->
+          <div class="lp-buttons">
+            <button class="lp-btn lp-btn-sesion" @click="iniciarSesion">Iniciar Sesión</button>
+            <button class="lp-btn lp-btn-registro" @click="registrar">Registrar</button>
+          </div>
         </div>
 
-        <div class="actions-link">
-          <RouterLink to="/recuperacion">¿Olvidaste tu contraseña?</RouterLink>
-        </div>
-
-        <div class="button-group">
-          <button type="submit" class="btn-primary">Iniciar Sesión</button>
-
-          <button type="button" class="btn-secondary" @click="router.push('/registro')">
-            Registrar
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-
-const router = useRouter()
-const authStore = useAuthStore()
-
 const email = ref('')
-const contrasena = ref('')
-
-const manejarLogin = async () => {
-  if (!email.value || !contrasena.value) return
-
-  const exito = await authStore.iniciarSesion(email.value, contrasena.value)
-
-  if (exito) {
-    router.push('/dashboard')
-  }
-}
+const password = ref('')
+const iniciarSesion = () => { /* lógica login */ }
+const registrar = () => { /* lógica registro */ }
 </script>
 
 <style scoped>
-.login-container {
+.lp-wrap {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100vh;
+  justify-content: center;
+  background: linear-gradient(135deg, #e0f7f4 0%, #ede8fb 100%);
+  padding: 2rem;
+  box-sizing: border-box;
 }
-
-.login-card {
-  background: white;
-  padding: 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
+.lp-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 10.0rem 5.8rem 6rem;
+  width: 300%;
+  max-width: 1000px;
+  border: 0.5px solid #c8f0e6;
+  box-shadow: 0 4px 32px rgba(29,158,117,0.10);
 }
-
-h2 {
-  margin-bottom: 0.5rem;
-  color: #2c3e50;
+.lp-layout {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
-
-.subtitle {
-  color: #7f8c8d;
-  margin-bottom: 2rem;
-}
-
-.form-group {
+.lp-left {
   display: flex;
   flex-direction: column;
-  text-align: left;
-  margin-bottom: 1.2rem;
+  align-items: center;
+  min-width: 130px;
 }
-
-label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+.lp-right { flex: 1; }
+.lp-logo { width: 380px; height: 380px; margin-bottom: 0.6rem; display: block; }
+.lp-title { font-size: 20px; font-weight: 500; color: #0F6E56; margin: 0; text-align: center; }
+.lp-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
 }
-
-input {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.actions-link {
+.lp-label {
+  font-size: 20px;
+  font-weight: 400;
+  color: #0F6E56;
+  white-space: nowrap;
+  width: 80px;
   text-align: right;
-  margin-bottom: 1.5rem;
 }
-
-.actions-link a {
-  color: #3498db;
-  text-decoration: none;
-  font-size: 0.9rem;
+.lp-input {
+  flex: 1;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1.5px solid #9FE1CB;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #f8fdfb;
+  outline: none;
+  margin-bottom: 0;
+  transition: border-color 0.2s;
 }
+.lp-input:focus { border-color: #1D9E75; background: #fff; }
+.lp-forgot { display: block; text-align: right; font-size: 15px; color: #534AB7; margin-top: -0.5rem; margin-bottom: 1.4rem; }
 
-.actions-link a:hover {
-  text-decoration: underline;
-}
-
-.button-group {
+/* Botones */
+.lp-buttons {
   display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
+  gap: 1.2rem;        /* Espacio entre los botones */
+  margin-top: 1.2rem;
 }
 
-button {
-  padding: 0.75rem;
+.lp-btn {
+  width: 50%;
+  padding: 12px 20px;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: bold;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  color: #fff;
+  transition: opacity 0.15s;
 }
 
-.btn-primary {
-  background-color: #2ecc71;
-  color: white;
+.lp-btn:hover {
+  opacity: 0.9;
 }
 
-.btn-primary:hover {
-  background-color: #27ae60;
+.lp-btn-sesion {
+  background: linear-gradient(90deg, #55bd9c, #5DCAA5);
 }
 
-.btn-secondary {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #c0392b;
+.lp-btn-registro {
+  background: linear-gradient(90deg, #7F77DD, #AFA9EC);
 }
 </style>
