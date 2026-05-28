@@ -1,6 +1,5 @@
 <template>
   <div class="dashboard-container">
-    <!-- Header con logo y título -->
     <header class="main-header">
       <div class="header-content">
         <img src="@/assets/mariposa.png" alt="Visión Psicológica" class="header-logo" />
@@ -11,13 +10,11 @@
     <div class="workspace">
       <aside class="sidebar">
         <ul class="menu-list">
-          <!-- Citas -->
-          <li class="menu-item-simple">
+          <li class="menu-item-simple" @click="vistaActual = 'bienvenida'">
             <span class="menu-icon">📅</span>
             Citas
           </li>
 
-          <!-- Historias -->
           <li class="menu-item" @click="toggleMenu('historias')">
             <div class="menu-title">
               <span class="menu-icon">📖</span>
@@ -30,7 +27,6 @@
             </ul>
           </li>
 
-          <!-- Clientes -->
           <li class="menu-item" @click="toggleMenu('clientes')">
             <div class="menu-title">
               <span class="menu-icon">👤</span>
@@ -38,12 +34,11 @@
               <span class="arrow">{{ menus.clientes ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.clientes" class="submenu" @click.stop>
-              <li>Crear Cliente</li>
+              <li @click="vistaActual = 'crearCliente'">Crear Cliente</li>
               <li>Buscar Cliente</li>
             </ul>
           </li>
 
-          <!-- Ordenamiento -->
           <li class="menu-item" @click="toggleMenu('ordenamiento')">
             <div class="menu-title">
               <span class="menu-icon">📋</span>
@@ -55,7 +50,6 @@
             </ul>
           </li>
 
-          <!-- Afiliados -->
           <li class="menu-item" @click="toggleMenu('afiliados')">
             <div class="menu-title">
               <span class="menu-icon">🤝</span>
@@ -71,7 +65,9 @@
       </aside>
 
       <main class="main-content">
-        <div class="welcome-box">
+        <RegistrarClienteView v-if="vistaActual === 'crearCliente'" />
+
+        <div class="welcome-box" v-else>
           <h2>Bienvenido/a <span class="user-name"></span></h2>
           <p>Por favor, elija una opción del menú de la izquierda.</p>
         </div>
@@ -82,6 +78,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+
+// MODIFICACIÓN 3: Importamos la vista que creaste y declaramos la variable de estado
+import RegistrarClienteView from './RegistrarClienteView.vue' 
+
+const vistaActual = ref('bienvenida') // Por defecto arranca mostrando la bienvenida
 
 const menus = ref({
   historias: false,
