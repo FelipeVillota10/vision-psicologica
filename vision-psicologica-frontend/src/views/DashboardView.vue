@@ -214,7 +214,7 @@ const toggleMenu = (menuName: 'historias' | 'clientes' | 'ordenamiento' | 'afili
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e0f5f5;
+  background-color: #ecf5f5;
   padding: 2rem;
 }
 
