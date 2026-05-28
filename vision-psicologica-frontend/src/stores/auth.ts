@@ -24,5 +24,23 @@ export const useAuthStore = defineStore('auth', {
         return false
       }
     },
+    async iniciarSesion(email: string, contrasena: string): Promise<boolean> {
+      try {
+        const response = await axios.post('http://localhost:8080/usuario/login', {
+          email: email,
+          contrasena: contrasena,
+        })
+
+        // Si el backend responde con éxito (Status 200)
+        if (response.status === 200) {
+          return true
+        }
+        return false
+      } catch (error) {
+        console.error('Error en las credenciales:', error)
+        alert('Email o contraseña incorrectos.')
+        return false
+      }
+    },
   },
 })

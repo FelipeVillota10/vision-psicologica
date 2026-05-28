@@ -4,24 +4,39 @@
       <h2>Visión Psicológica</h2>
       <p class="subtitle">Control de Acceso</p>
 
-      <form @submit.prevent>
+      <form @submit.prevent="manejarLogin">
         <div class="form-group">
           <label for="email">Email:</label>
-          <input type="email" id="email" placeholder="ejemplo@correo.com" />
+          <input
+            type="email"
+            id="email"
+            v-model="email"
+            placeholder="ejemplo@correo.com"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="password">Contraseña:</label>
-          <input type="password" id="password" placeholder="********" />
+          <input
+            type="password"
+            id="password"
+            v-model="contrasena"
+            placeholder="********"
+            required
+          />
         </div>
 
         <div class="actions-link">
-          <RouterLink to="/registro">¿Olvidaste tu contraseña?</RouterLink>
+          <RouterLink to="/recuperacion">¿Olvidaste tu contraseña?</RouterLink>
         </div>
 
         <div class="button-group">
-          <button type="button" class="btn-primary">Iniciar Sesión</button>
-          <button type="button" class="btn-secondary">Registrar</button>
+          <button type="submit" class="btn-primary">Iniciar Sesión</button>
+
+          <button type="button" class="btn-secondary" @click="router.push('/registro')">
+            Registrar
+          </button>
         </div>
       </form>
     </div>
@@ -29,7 +44,25 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const email = ref('')
+const contrasena = ref('')
+
+const manejarLogin = async () => {
+  if (!email.value || !contrasena.value) return
+
+  const exito = await authStore.iniciarSesion(email.value, contrasena.value)
+
+  if (exito) {
+    router.push('/dashboard')
+  }
+}
 </script>
 
 <style scoped>
