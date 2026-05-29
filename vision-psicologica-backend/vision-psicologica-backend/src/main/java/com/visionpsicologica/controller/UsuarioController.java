@@ -81,4 +81,11 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Email o contraseña incorrectos"));
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUsuario() {
+        // Aquí podrías agregar lógica para invalidar tokens si los usas.
+        // Por ahora, cumplimos con el contrato devolviendo el mensaje esperado.
+        return ResponseEntity.ok().body(Map.of("message", "Sesión cerrada exitosamente"));
+    }
 }

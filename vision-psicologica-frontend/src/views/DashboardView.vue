@@ -5,20 +5,25 @@
         <img src="@/assets/mariposa.png" alt="Visión Psicológica" class="header-logo" />
         <h1>Visión Psicológica TM</h1>
       </div>
+
+      <div class="header-profile" @click="toggleProfileMenu">
+        <span class="profile-icon">👤</span>
+        <ul v-if="showProfileMenu" class="profile-menu" @click.stop>
+          <li class="logout-btn" @click="cerrarSesion">Cerrar Sesión</li>
+        </ul>
+      </div>
     </header>
 
     <div class="workspace">
       <aside class="sidebar">
         <ul class="menu-list">
           <li class="menu-item-simple" @click="vistaActual = 'bienvenida'">
-            <span class="menu-icon">📅</span>
-            Citas
+            <span class="menu-icon">📅</span> Citas
           </li>
 
           <li class="menu-item" @click="toggleMenu('historias')">
             <div class="menu-title">
-              <span class="menu-icon">📖</span>
-              Historias 
+              <span class="menu-icon">📖</span> Historias 
               <span class="arrow">{{ menus.historias ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.historias" class="submenu" @click.stop>
@@ -29,8 +34,7 @@
 
           <li class="menu-item" @click="toggleMenu('clientes')">
             <div class="menu-title">
-              <span class="menu-icon">👤</span>
-              Clientes 
+              <span class="menu-icon">👤</span> Clientes 
               <span class="arrow">{{ menus.clientes ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.clientes" class="submenu" @click.stop>
@@ -41,8 +45,7 @@
 
           <li class="menu-item" @click="toggleMenu('ordenamiento')">
             <div class="menu-title">
-              <span class="menu-icon">📋</span>
-              Ordenamiento 
+              <span class="menu-icon">📋</span> Ordenamiento 
               <span class="arrow">{{ menus.ordenamiento ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.ordenamiento" class="submenu" @click.stop>
@@ -52,8 +55,7 @@
 
           <li class="menu-item" @click="toggleMenu('afiliados')">
             <div class="menu-title">
-              <span class="menu-icon">🤝</span>
-              Afiliados 
+              <span class="menu-icon">🤝</span> Afiliados 
               <span class="arrow">{{ menus.afiliados ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.afiliados" class="submenu" @click.stop>
@@ -66,9 +68,8 @@
 
       <main class="main-content">
         <RegistrarClienteView v-if="vistaActual === 'crearCliente'" />
-
         <div class="welcome-box" v-else>
-          <h2>Bienvenido/a <span class="user-name"></span></h2>
+          <h2>Bienvenido/a</h2>
           <p>Por favor, elija una opción del menú de la izquierda.</p>
         </div>
       </main>
@@ -78,11 +79,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-
-// MODIFICACIÓN 3: Importamos la vista que creaste y declaramos la variable de estado
+import { useRouter } from 'vue-router'
 import RegistrarClienteView from './RegistrarClienteView.vue' 
 
-const vistaActual = ref('bienvenida') // Por defecto arranca mostrando la bienvenida
+const router = useRouter()
+const vistaActual = ref('bienvenida')
+const showProfileMenu = ref(false)
 
 const menus = ref({
   historias: false,
@@ -94,156 +96,68 @@ const menus = ref({
 const toggleMenu = (menuName: 'historias' | 'clientes' | 'ordenamiento' | 'afiliados') => {
   menus.value[menuName] = !menus.value[menuName]
 }
+
+const toggleProfileMenu = () => {
+  showProfileMenu.value = !showProfileMenu.value
+}
+
+const cerrarSesion = async () => {
+  if (!confirm("¿Desea cerrar sesión?")) {
+    showProfileMenu.value = false
+    return
+  }
+
+  try {
+    const response = await fetch('http://localhost:8080/usuario/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+
+    if (response.ok) {
+      router.push('/')
+    } else {
+      alert("Error al cerrar sesión")
+    }
+  } catch (error) {
+    console.error("Error de red:", error)
+    alert("No se pudo conectar con el servidor")
+  }
+}
 </script>
 
 <style scoped>
-/* ====================== HEADER ====================== */
-.dashboard-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+/* Estilos Header */
+.dashboard-container { display: flex; flex-direction: column; height: 100vh; }
+.main-header { 
+  background-color: #d3d4f5; padding: 0.8rem 1.5rem; 
+  display: flex; align-items: center; justify-content: space-between; 
+  border-bottom: 1px solid #1e1e1e; 
 }
+.header-content { display: flex; align-items: center; gap: 1rem; }
+.header-logo { width: 65px; height: 65px; object-fit: contain; }
+.main-header h1 { margin: 0; font-size: 1.9rem; font-weight: 600; }
 
-.main-header {
-  background-color: #d3d4f5;
-  color: rgb(0, 0, 0);
-  padding: 0.8rem 1.5rem;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #1e1e1e;
+/* Estilos Perfil */
+.header-profile { position: relative; cursor: pointer; padding: 0.5rem; border-radius: 50%; }
+.profile-menu { 
+  position: absolute; top: 110%; right: 0; background-color: white; 
+  border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+  list-style: none; padding: 0; margin: 0; min-width: 160px; z-index: 1000; 
 }
+.profile-menu li { padding: 0.8rem 1rem; cursor: pointer; color: #333; }
+.logout-btn { color: #d9534f !important; font-weight: bold; }
+.profile-menu li:hover { background-color: #f0f0f0; }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.header-logo {
-  width: 65px;
-  height: 65px;
-  object-fit: contain;
-}
-
-.main-header h1 {
-  margin: 0;
-  font-size: 1.9rem;
-  font-weight: 600;
-}
-
-/* ====================== SIDEBAR ====================== */
-.workspace {
-  display: flex;
-  flex: 1;
-}
-
-.sidebar {
-  width: 280px;
-  background-color: #d3d4f5;
-  color: #000000;
-  padding-top: 0;
-  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  border-top: 1px solid #1e1e1e;
-  border-right: 1px solid #1e1e1e;
-  border-left: 1px solid #1e1e1e;
-}
-
-.menu-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Estilos para iconos */
-.menu-icon {
-  display: inline-block;
-  width: 24px;
-  margin-right: 12px;
-  font-size: 1.3rem;
-  text-align: center;
-}
-
-.menu-item-simple,
-.menu-title {
-  padding: 1rem 1.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  border-bottom: 1px solid #344a73;
-  transition: background 0.2s;
-  display: flex;
-  align-items: center;
-}
-
-.menu-title {
-  justify-content: space-between;
-}
-
-.arrow {
-  margin-left: auto;
-  font-size: 1rem;
-  opacity: 0.8;
-}
-
-.menu-item-simple:hover,
-.menu-title:hover {
-  background-color: #b8b9e0;
-}
-
-.submenu {
-  list-style: none;
-  padding: 0;
-  background-color: #c5c6eb;
-}
-
-.submenu li {
-  padding: 0.85rem 2.8rem;
-  cursor: pointer;
-  color: #2c2c2c;
-  transition: all 0.2s;
-}
-
-.submenu li:hover {
-  background-color: #a8a9d8;
-  color: black;
-  padding-left: 3rem;
-}
-
-/* ====================== MAIN CONTENT ====================== */
-.main-content {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #ecf5f5;
-  padding: 2rem;
-}
-
-.welcome-box {
-  text-align: center;
-  background: #e0f5f5;
-  padding: 4rem 3rem;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(48, 48, 48, 0.08);
-  max-width: 520px;
-  width: 100%;
-}
-
-.welcome-box h2 {
-  color: #1e3a5f;
-  font-size: 2.2rem;
-  margin: 0 0 1rem 0;
-}
-
-.user-name {
-  color: #2c8a6e;
-  font-weight: 500;
-}
-
-.welcome-box p {
-  color: #5f6b7a;
-  font-size: 1.15rem;
-}
-
-/* mondongo 🗣*/
+/* Mantener tus estilos anteriores de .workspace, .sidebar, .main-content aquí abajo... */
+.workspace { display: flex; flex: 1; }
+.sidebar { width: 280px; background-color: #d3d4f5; color: #000000; overflow-y: auto; border: 1px solid #1e1e1e; }
+.menu-list { list-style: none; padding: 0; margin: 0; }
+.menu-icon { display: inline-block; width: 24px; margin-right: 12px; font-size: 1.3rem; text-align: center; }
+.menu-item-simple, .menu-title { padding: 1rem 1.5rem; font-weight: 600; cursor: pointer; border-bottom: 1px solid #344a73; display: flex; align-items: center; }
+.menu-title { justify-content: space-between; }
+.arrow { margin-left: auto; font-size: 1rem; }
+.submenu { list-style: none; padding: 0; background-color: #c5c6eb; }
+.submenu li { padding: 0.85rem 2.8rem; cursor: pointer; }
+.main-content { flex: 1; display: flex; justify-content: center; align-items: center; background-color: #ecf5f5; padding: 2rem; }
+.welcome-box { text-align: center; background: #e0f5f5; padding: 4rem 3rem; border-radius: 12px; }
 </style>
