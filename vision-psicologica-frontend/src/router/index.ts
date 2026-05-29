@@ -3,6 +3,7 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import RecoverView from '../views/RecoverView.vue'
+import HistoriaView from '../views/HistoriaView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/recuperacion',
       name: 'recover',
       component: RecoverView,
+    },
+    {
+      path: '/historia',
+      name: 'historia',
+      component: HistoriaView,
     },
   ],
 })
