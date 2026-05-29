@@ -23,18 +23,18 @@
 
           <li class="menu-item" @click="toggleMenu('historias')">
             <div class="menu-title">
-              <span class="menu-icon">📖</span> Historias 
+              <span class="menu-icon">📖</span> Historias
               <span class="arrow">{{ menus.historias ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.historias" class="submenu" @click.stop>
-              <li>Crear Historia</li>
+              <li @click="vistaActual = 'crearHistoria'">Crear Historia</li>
               <li>Buscar Historia</li>
             </ul>
           </li>
 
           <li class="menu-item" @click="toggleMenu('clientes')">
             <div class="menu-title">
-              <span class="menu-icon">👤</span> Clientes 
+              <span class="menu-icon">👤</span> Clientes
               <span class="arrow">{{ menus.clientes ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.clientes" class="submenu" @click.stop>
@@ -45,7 +45,7 @@
 
           <li class="menu-item" @click="toggleMenu('ordenamiento')">
             <div class="menu-title">
-              <span class="menu-icon">📋</span> Ordenamiento 
+              <span class="menu-icon">📋</span> Ordenamiento
               <span class="arrow">{{ menus.ordenamiento ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.ordenamiento" class="submenu" @click.stop>
@@ -55,7 +55,7 @@
 
           <li class="menu-item" @click="toggleMenu('afiliados')">
             <div class="menu-title">
-              <span class="menu-icon">🤝</span> Afiliados 
+              <span class="menu-icon">🤝</span> Afiliados
               <span class="arrow">{{ menus.afiliados ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.afiliados" class="submenu" @click.stop>
@@ -68,6 +68,8 @@
 
       <main class="main-content">
         <RegistrarClienteView v-if="vistaActual === 'crearCliente'" />
+        <HistoriaView v-else-if="vistaActual === 'crearHistoria'" />
+
         <div class="welcome-box" v-else>
           <h2>Bienvenido/a</h2>
           <p>Por favor, elija una opción del menú de la izquierda.</p>
@@ -80,9 +82,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import RegistrarClienteView from './RegistrarClienteView.vue' 
+import RegistrarClienteView from './RegistrarClienteView.vue'
+import HistoriaView from './HistoriaView.vue'
 
 const router = useRouter()
+
 const vistaActual = ref('bienvenida')
 const showProfileMenu = ref(false)
 

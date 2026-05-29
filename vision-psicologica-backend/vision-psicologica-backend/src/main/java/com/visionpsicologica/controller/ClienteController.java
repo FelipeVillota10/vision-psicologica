@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 // 1. Agregas esta importación
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-// 2. Agregas esta anotación apuntando al puerto de tu Vue
+import java.util.List;
+
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/clientes")
@@ -27,6 +28,16 @@ public class ClienteController {
             return new ResponseEntity<>(nuevoCliente, HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ClienteModel>> listarClientes() {
+        try {
+            List<ClienteModel> clientes = clienteService.obtenerTodosLosClientes();
+            return new ResponseEntity<>(clientes, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

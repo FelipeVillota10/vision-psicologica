@@ -5,6 +5,8 @@ import com.visionpsicologica.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ClienteService {
 
@@ -19,5 +21,8 @@ public class ClienteService {
 
         // El guardado en la base de datos (Neon PostgreSQL)
         return clienteRepository.save(cliente);
+    }
+    public List<ClienteModel> obtenerTodosLosClientes() {
+        return clienteRepository.findAll();
     }
 }
