@@ -128,13 +128,14 @@ const guardarCliente = async () => {
       headers: {
         'Content-Type': 'application/json'
       },
+      // AQUÍ VA EL CAMBIO QUE HICISTE
       body: JSON.stringify({
         nombre: form.value.nombre,
         identificacion: form.value.identificacion,
         telefono: form.value.telefono,
         correoElectronico: form.value.correoElectronico,
         direccion: form.value.direccion,
-        usuario: { id: 8 } // <-- IMPORTANTE: ID del psicólogo para la relación en DB
+        usuarios: [ { id: 8 } ] // Mandamos la lista con el psicólogo
       })
     });
 

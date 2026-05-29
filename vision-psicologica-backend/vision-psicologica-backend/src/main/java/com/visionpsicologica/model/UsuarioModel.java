@@ -1,11 +1,13 @@
 package com.visionpsicologica.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Builder
 @Getter
@@ -14,8 +16,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name="usuarios")
-
 public class UsuarioModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
@@ -32,4 +34,9 @@ public class UsuarioModel {
 
     @Column(name = "contrasena", nullable = false, length = 255)
     private String contrasena;
+
+    // Relación inversa: Un usuario puede tener muchos clientes
+    @ManyToMany(mappedBy = "usuarios")
+    @JsonIgnore // Evita un bucle infinito al devolver el JSON en las peticiones
+    private List<ClienteModel> clientes;
 }
