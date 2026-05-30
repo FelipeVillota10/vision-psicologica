@@ -75,4 +75,27 @@ public class UsuarioService {
         UsuarioModel usuario = usuarioOpt.get();
         return usuario.getContrasena().equals(contrasenaPlana);
     }
+    // HU-4 Criterio 3: Buscar usuario por email o identificación
+    public Optional<UsuarioModel> buscarParaRecuperacion(String email, String identificacion) {
+        if (email != null && !email.trim().isEmpty()) {
+            return usuarioRepository.findByEmail(email.trim());
+        }
+        if (identificacion != null && !identificacion.trim().isEmpty()) {
+            return usuarioRepository.findByIdentificacion(identificacion.trim());
+        }
+        return Optional.empty();
+    }
+
+    // HU-4 Criterio 5: Guardar la nueva contraseña directamente en la base de datos
+    public boolean actualizarContrasena(Long idUsuario, String nuevaContrasena) {
+        Optional<UsuarioModel> usuarioOpt = usuarioRepository.findById(idUsuario);
+        if (usuarioOpt.isPresent()) {
+            UsuarioModel usuario = usuarioOpt.get();
+            usuario.setContrasena(nuevaContrasena);
+            usuarioRepository.save(usuario);
+            return true;
+        }
+        return false;
+    }
+
 }

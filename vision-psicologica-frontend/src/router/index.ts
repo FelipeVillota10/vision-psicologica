@@ -4,6 +4,9 @@ import RegisterView from '../views/RegisterView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import RecoverView from '../views/RecoverView.vue'
 import HistoriaView from '../views/HistoriaView.vue'
+import BuscarClienteView from '../views/BuscarClienteView.vue'
+import BuscarHistoriaView from '../views/BuscarHistoriaView.vue'
+import ModificarHistoriaView from '../views/ModificarHistoriaView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +35,21 @@ const router = createRouter({
       path: '/historia',
       name: 'historia',
       component: HistoriaView,
+    },
+    {
+      path: '/buscarCliente',
+      name: 'buscarCliente',
+      component: BuscarClienteView,
+    },
+    {
+      path: '/buscar-historia',
+      name: 'buscar-historia',
+      component: BuscarHistoriaView,
+    },
+    {
+      path: '/modificar-historia',
+      name: 'modificar-historia',
+      component: ModificarHistoriaView,
     },
   ],
 })

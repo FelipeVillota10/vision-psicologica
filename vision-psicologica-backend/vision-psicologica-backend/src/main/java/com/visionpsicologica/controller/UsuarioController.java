@@ -84,8 +84,46 @@ public class UsuarioController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUsuario() {
-        // Aquí podrías agregar lógica para invalidar tokens si los usas.
-        // Por ahora, cumplimos con el contrato devolviendo el mensaje esperado.
         return ResponseEntity.ok().body(Map.of("message", "Sesión cerrada exitosamente"));
     }
+
+    // HU-4 Criterio 3: Endpoint para solicitar la clave temporal
+    @PostMapping("/recuperar-solicitud")
+    public ResponseEntity<?> solicitarRecuperacion(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String identificacion = payload.get("identificacion");
+
+        Optional<UsuarioModel> usuarioOpt = usuarioService.buscarParaRecuperacion(email, identificacion);
+
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "El usuario no se encuentra registrado en el sistema."));
+        }
+
+        UsuarioModel usuario = usuarioOpt.get();
+        String claveTemporalSimulada = "12345";
+
+        return ResponseEntity.ok().body(Map.of(
+                "message", "Se ha enviado una contraseña temporal al correo: " + usuario.getEmail(),
+                "idUsuario", usuario.getId(),
+                "emailUsuario", usuario.getEmail(),
+                "claveTemporal", claveTemporalSimulada
+        ));
+    }
+
+    // HU-4 Criterio 5: Endpoint para guardar la nueva contraseña definitiva
+    @PostMapping("/guardar-nueva-contrasena")
+    public ResponseEntity<?> guardarNuevaContrasena(@RequestBody Map<String, Object> payload) {
+        Long idUsuario = Long.valueOf(payload.get("idUsuario").toString());
+        String nuevaContrasena = payload.get("nuevaContrasena").toString();
+
+        boolean exito = usuarioService.actualizarContrasena(idUsuario, nuevaContrasena);
+
+        if (exito) {
+            return ResponseEntity.ok().body(Map.of("message", "¡Cambio exitoso! La nueva contraseña se ha actualizado correctamente en la Base de Datos."));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "No se pudo actualizar la contraseña."));
+        }
+    }
+
 }
