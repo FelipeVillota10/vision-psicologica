@@ -40,4 +40,25 @@ public class HistoriaClinicaController {
 
         return new ResponseEntity<>("No se encontró ninguna historia clínica asociada al ID de cliente: " + idCliente, HttpStatus.NOT_FOUND);
     }
+
+    @GetMapping
+    public ResponseEntity<?> obtenerTodas() {
+        return ResponseEntity.ok(historiaClinicaService.obtenerTodas());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<HistoriaClinicaModel> obtenerPorId(@PathVariable Long id) {
+        return historiaClinicaService.buscarPorId(id)
+                .map(ResponseEntity::ok) // Si la encuentra, devuelve 200 OK con los datos
+                .orElse(ResponseEntity.notFound().build()); // Si no, devuelve el 404 Not Found que veías antes
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<HistoriaClinicaModel> actualizarHistoria(
+            @PathVariable Long id,
+            @RequestBody HistoriaClinicaModel historiaModificada) {
+
+        return historiaClinicaService.actualizar(id, historiaModificada)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
