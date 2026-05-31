@@ -40,4 +40,16 @@ public class ClienteController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping("/{id}")
+    @ResponseBody // Añade esto para asegurar la serialización
+    public ResponseEntity<ClienteModel> actualizarCliente(@PathVariable Long id, @RequestBody ClienteModel cliente) {
+        // Imprime lo que llega al controlador
+        System.out.println("Backend recibió: " + cliente.getIdentificacion());
+
+        ClienteModel actualizado = clienteService.actualizarCliente(id, cliente);
+        return ResponseEntity.ok(actualizado);
+    }
+
+
 }

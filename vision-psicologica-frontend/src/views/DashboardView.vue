@@ -17,8 +17,15 @@
     <div class="workspace">
       <aside class="sidebar">
         <ul class="menu-list">
-          <li class="menu-item-simple" @click="vistaActual = 'bienvenida'">
-            <span class="menu-icon">📅</span> Citas
+          <li class="menu-item" @click="toggleMenu('citas')">
+            <div class="menu-title">
+              <span class="menu-icon">📅</span> Citas
+              <span class="arrow">{{ menus.citas ? '▼' : '►' }}</span>
+            </div>
+
+            <ul v-if="menus.citas" class="submenu" @click.stop>
+              <li @click="vistaActual = 'crearCita'">Crear Cita</li>
+            </ul>
           </li>
 
           <li class="menu-item" @click="toggleMenu('historias')">
@@ -71,6 +78,7 @@
         <BuscarClienteView v-else-if="vistaActual === 'buscarCliente'" />
         <HistoriaView v-else-if="vistaActual === 'crearHistoria'" />
         <BuscarHistoriaView v-else-if="vistaActual === 'buscarHistoria'" />
+        <CrearCitaView v-else-if="vistaActual === 'crearCita'" />
 
         <div class="welcome-box" v-else>
           <h2>Bienvenido/a</h2>
@@ -88,6 +96,7 @@ import RegistrarClienteView from './RegistrarClienteView.vue'
 import BuscarClienteView from './BuscarClienteView.vue'
 import HistoriaView from './HistoriaView.vue'
 import BuscarHistoriaView from './BuscarHistoriaView.vue'
+import CrearCitaView from './CrearCitaView.vue'
 
 const router = useRouter()
 
@@ -95,13 +104,16 @@ const vistaActual = ref('bienvenida')
 const showProfileMenu = ref(false)
 
 const menus = ref({
+  citas: false,
   historias: false,
   clientes: false,
   ordenamiento: false,
   afiliados: false,
 })
 
-const toggleMenu = (menuName: 'historias' | 'clientes' | 'ordenamiento' | 'afiliados') => {
+const toggleMenu = (
+  menuName: 'citas' | 'historias' | 'clientes' | 'ordenamiento' | 'afiliados',
+) => {
   menus.value[menuName] = !menus.value[menuName]
 }
 
