@@ -1,38 +1,49 @@
 <template>
-  <div class="contenedor-pantalla">
-    <div class="tarjeta-formulario">
-      
-      <h2>Crear historia Clínica</h2>
-      
+  <div class="historia-container">
+    <div class="historia-card">
+      <div class="historia-header">
+        <img src="@/assets/mariposa.png" alt="Visión Psicológica" class="historia-logo" />
+        <div class="title-container">
+          <h2>Crear historia Clínica</h2>
+          <p class="subtitle">Selecciona el cliente y la fecha de creación</p>
+        </div>
+      </div>
+
       <form @submit.prevent="manejarEnvio">
-        
-        <div class="campo-grupo">
-          <label for="cliente">Cliente *</label>
+        <div class="form-group">
+          <label for="cliente">Cliente <span class="required">*</span></label>
           <select id="cliente" v-model="formulario.clienteId" required>
-            <option value="" disabled selected>Seleccionar</option>
-            <option v-for="cliente in listaClientes" :key="cliente.id" :value="cliente.id">
+            <option value="" disabled>Seleccionar</option>
+            <option
+              v-for="cliente in listaClientes"
+              :key="cliente.id"
+              :value="cliente.id"
+            >
               {{ cliente.nombre }} ({{ cliente.identificacion }})
             </option>
           </select>
         </div>
 
-        <div class="campo-grupo">
-          <label for="fecha">Fecha de creación *</label>
-          <input 
-            type="date" 
-            id="fecha" 
-            v-model="formulario.fechaCreacion" 
+        <div class="form-group">
+          <label for="fecha">Fecha de creación <span class="required">*</span></label>
+          <input
+            type="date"
+            id="fecha"
+            v-model="formulario.fechaCreacion"
             required
           />
         </div>
 
-        <div class="botones-contenedor">
-          <button type="submit" class="btn-crear">Crear</button>
-          <button type="button" class="btn-limpiar" @click="limpiarFormulario">Limpiar</button>
+        <div class="button-group">
+          <button type="submit" class="btn-create" :disabled="cargando">
+            {{ cargando ? 'Creando...' : 'Crear' }}
+          </button>
+
+          <button type="button" class="btn-clear" @click="limpiarFormulario" :disabled="cargando">
+            Limpiar
+          </button>
         </div>
-
       </form>
-
     </div>
   </div>
 </template>
@@ -53,9 +64,10 @@ const formularioInicial = {
   clienteId: '',
   fechaCreacion: ''
 };
-const formulario = ref({ ...formularioInicial });
 
+const formulario = ref({ ...formularioInicial });
 const listaClientes = ref<Cliente[]>([]);
+const cargando = ref(false);
 
 const API_URL = 'http://localhost:8080/api/clientes';
 
@@ -65,7 +77,6 @@ const cargarClientesDesdeBD = async () => {
     if (!respuesta.ok) {
       throw new Error('No se pudo obtener la lista de clientes');
     }
-    // TypeScript ahora sabe que lo que llega aquí encaja con la interfaz Cliente
     listaClientes.value = await respuesta.json();
   } catch (error) {
     console.error('Error al conectar con el backend:', error);
@@ -75,15 +86,14 @@ const cargarClientesDesdeBD = async () => {
 
 onMounted(() => {
   cargarClientesDesdeBD();
-
   const hoy = new Date().toISOString().slice(0, 10);
   formulario.value.fechaCreacion = hoy;
 });
 
 const limpiarFormulario = () => {
-  formulario.value = { 
+  formulario.value = {
     clienteId: '',
-    fechaCreacion: new Date().toISOString().slice(0, 10) // Cambiado aquí también
+    fechaCreacion: new Date().toISOString().slice(0, 10)
   };
 };
 
@@ -103,6 +113,8 @@ const manejarEnvio = async () => {
   };
 
   try {
+    cargando.value = true;
+
     const respuesta = await fetch(POST_URL, {
       method: 'POST',
       headers: {
@@ -114,103 +126,144 @@ const manejarEnvio = async () => {
     if (respuesta.ok) {
       const resultado = await respuesta.json();
       alert(`¡Historia clínica creada con éxito! ID del expediente: ${resultado.id}`);
-
       limpiarFormulario();
     } else {
       const mensajeError = await respuesta.text();
       alert(`Error del sistema: ${mensajeError}`);
     }
-
   } catch (error) {
     console.error('Error al conectar con el servidor:', error);
     alert('No se pudo conectar con el servidor. Inténtalo de nuevo más tarde.');
+  } finally {
+    cargando.value = false;
   }
 };
 </script>
 
 <style scoped>
-.contenedor-pantalla {
+.historia-container {
   display: flex;
+  align-items: flex-start;
   justify-content: center;
-  align-items: center;
-  min-height: 80vh;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
+  padding: 2rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
 }
 
-.tarjeta-formulario {
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 8px;
-  border: 1px solid #cccccc;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  width: 350px;
+.historia-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2.5rem 3.5rem;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0 8px 30px rgba(29, 158, 117, 0.12);
+  border: 1px solid #c8f0e6;
+}
+
+.historia-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.historia-logo {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.title-container {
+  flex: 1;
+  text-align: left;
 }
 
 h2 {
-  text-align: center;
-  color: #333333;
-  margin-bottom: 25px;
-  font-size: 1.5rem;
+  color: #0f6e56;
+  margin: 0 0 0.4rem 0;
+  font-size: 1.8rem;
 }
 
-.campo-grupo {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
+.subtitle {
+  color: #5f6b7a;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
 }
 
 label {
-  margin-bottom: 8px;
-  font-weight: bold;
-  color: #444444;
-  font-size: 0.9rem;
-}
-
-select, input[type="date"] {
-  padding: 10px;
-  border: 1px solid #aaaaaa;
-  border-radius: 4px;
+  display: block;
+  font-weight: 600;
+  color: #0f6e56;
+  margin-bottom: 0.5rem;
   font-size: 1rem;
-  background-color: #fff;
+}
+
+.required {
+  color: #e74c3c;
+}
+
+select,
+input[type="date"] {
+  width: 100%;
+  padding: 12px 18px;
+  border: 2px solid #9fe1cb;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #f8fdfb;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+select:focus,
+input[type="date"]:focus {
   outline: none;
+  border-color: #1d9e75;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(29, 158, 117, 0.12);
 }
 
-select:focus, input[type="date"]:focus {
-  border-color: #007bff;
-}
-
-.botones-contenedor {
+.button-group {
   display: flex;
-  justify-content: space-between;
-  margin-top: 25px;
+  gap: 14px;
+  margin-top: 2rem;
 }
 
 button {
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
+  flex: 1;
+  padding: 12px 20px;
   border: none;
-  width: 45%;
-  transition: background-color 0.2s;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.btn-crear {
-  background-color: #007bff;
-  color: white;
+.btn-create {
+  background: linear-gradient(90deg, #baf5f2, #47a595);
+  color: rgb(253, 253, 253);
 }
 
-.btn-crear:hover {
-  background-color: #0056b3;
+.btn-clear {
+  background: linear-gradient(90deg, #acadd6, #7e80da);
+  color: rgb(255, 255, 255);
 }
 
-.btn-limpiar {
-  background-color: #e0e0e0;
-  color: #333333;
+.btn-create:hover:not(:disabled),
+.btn-clear:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-2px);
 }
 
-.btn-limpiar:hover {
-  background-color: #cccccc;
+.btn-create:disabled,
+.btn-clear:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 </style>

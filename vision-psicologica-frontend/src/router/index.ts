@@ -7,6 +7,7 @@ import HistoriaView from '../views/HistoriaView.vue'
 import BuscarClienteView from '../views/BuscarClienteView.vue'
 import BuscarHistoriaView from '../views/BuscarHistoriaView.vue'
 import ModificarHistoriaView from '../views/ModificarHistoriaView.vue'
+import CrearCitaView from '../views/CrearCitaView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +51,11 @@ const router = createRouter({
       path: '/modificar-historia',
       name: 'modificar-historia',
       component: ModificarHistoriaView,
+    },
+    {
+      path: '/crear-cita',
+      name: 'crear-cita',
+      component: CrearCitaView,
     },
   ],
 })
