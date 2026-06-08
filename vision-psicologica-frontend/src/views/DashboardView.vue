@@ -24,7 +24,7 @@
             </div>
 
             <ul v-if="menus.citas" class="submenu" @click.stop>
-              <li @click="vistaActual = 'crearCita'">Crear Cita</li>
+              <li @click="cambiarVista('crearCita')">Crear Cita</li>
             </ul>
           </li>
 
@@ -34,8 +34,8 @@
               <span class="arrow">{{ menus.historias ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.historias" class="submenu" @click.stop>
-              <li @click="vistaActual = 'crearHistoria'">Crear Historia</li>
-              <li @click="vistaActual = 'buscarHistoria'">Buscar Historia</li>
+              <li @click="cambiarVista('crearHistoria')">Crear Historia</li>
+              <li @click="cambiarVista('buscarHistoria')">Buscar Historia</li>
             </ul>
           </li>
 
@@ -45,8 +45,8 @@
               <span class="arrow">{{ menus.clientes ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.clientes" class="submenu" @click.stop>
-              <li @click="vistaActual = 'crearCliente'">Crear Cliente</li>
-              <li @click="vistaActual = 'buscarCliente'">Buscar Cliente</li>
+              <li @click="cambiarVista('crearCliente')">Crear Cliente</li>
+              <li @click="cambiarVista('buscarCliente')">Buscar Cliente</li>
             </ul>
           </li>
 
@@ -81,8 +81,24 @@
         <CrearCitaView v-else-if="vistaActual === 'crearCita'" />
 
         <div class="welcome-box" v-else>
-          <h2>Bienvenido/a</h2>
-          <p>Por favor, elija una opción del menú de la izquierda.</p>
+          <h2>Panel de Control</h2>
+          <p class="welcome-text">Bienvenido/a al sistema. Aquí tienes el resumen operacional de tus pacientes asignados en tiempo real.</p>
+          
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="card-icon">👥</div>
+              <div class="card-data">
+                <span class="metric-label">Total Pacientes Registrados</span>
+                <h3 class="metric-value" v-if="totalPacientes > 0">{{ totalPacientes }} pacientes</h3>
+                <h3 class="metric-value empty" v-else>0 pacientes</h3>
+              </div>
+              <p class="empty-suggestion" v-if="totalPacientes === 0">Aún no tienes pacientes registrados en tu cuenta.</p>
+              
+              <button class="btn-goto-list" @click="vistaActual = 'buscarCliente'">
+                Ver lista completa de pacientes →
+              </button>
+            </div>
+          </div>
         </div>
       </main>
     </div>
@@ -90,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import RegistrarClienteView from './RegistrarClienteView.vue'
 import BuscarClienteView from './BuscarClienteView.vue'
@@ -102,6 +118,7 @@ const router = useRouter()
 
 const vistaActual = ref('bienvenida')
 const showProfileMenu = ref(false)
+const totalPacientes = ref(0) // Estado numérico para la HU-29
 
 const menus = ref({
   citas: false,
@@ -110,6 +127,27 @@ const menus = ref({
   ordenamiento: false,
   afiliados: false,
 })
+
+// Función para cargar la métrica en tiempo real desde tu API
+const consultarTotalPacientes = async () => {
+  try {
+    const response = await fetch('http://localhost:8080/api/clientes')
+    if (response.ok) {
+      const clientes = await response.json()
+      totalPacientes.value = clientes.length // Asigna dinámicamente la cantidad (ej: 5)
+    }
+  } catch (error) {
+    console.error('Error al cargar métricas del dashboard:', error)
+  }
+}
+
+// Cambiar de vista y forzar la recarga automática de métricas al regresar
+const cambiarVista = (vista: string) => {
+  vistaActual.value = vista
+  if (vista === 'bienvenida') {
+    consultarTotalPacientes()
+  }
+}
 
 const toggleMenu = (
   menuName: 'citas' | 'historias' | 'clientes' | 'ordenamiento' | 'afiliados',
@@ -143,6 +181,11 @@ const cerrarSesion = async () => {
     alert('No se pudo conectar con el servidor')
   }
 }
+
+// Hook de ciclo de vida para cargar el valor automáticamente al iniciar o recargar la pantalla
+onMounted(() => {
+  consultarTotalPacientes()
+})
 </script>
 
 <style scoped>
@@ -210,7 +253,7 @@ const cerrarSesion = async () => {
   background-color: #f0f0f0;
 }
 
-/* Mantener tus estilos anteriores de .workspace, .sidebar, .main-content aquí abajo... */
+/* Estilos de estructura */
 .workspace {
   display: flex;
   flex: 1;
@@ -267,10 +310,110 @@ const cerrarSesion = async () => {
   background-color: #ecf5f5;
   padding: 2rem;
 }
+
+/* Estilos de Bienvenida y Widget de Métrica Responsive (HU-29) */
 .welcome-box {
-  text-align: center;
-  background: #e0f5f5;
-  padding: 4rem 3rem;
+  width: 100%;
+  max-width: 750px;
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+.welcome-box h2 {
+  color: #344a73;
+  margin-top: 0;
+  font-size: 2rem;
+}
+.welcome-text {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+/* Diseño de la Tarjeta de Métricas */
+.metrics-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.metric-card {
+  background: linear-gradient(135deg, #f4f5f9 0%, #e8eaf6 100%);
+  border-left: 5px solid #7e80da;
   border-radius: 12px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+.metric-card:hover {
+  transform: translateY(-2px);
+}
+.card-icon {
+  font-size: 2.2rem;
+  background: white;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.card-data {
+  display: flex;
+  flex-direction: column;
+}
+.metric-label {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #718096;
+  font-weight: 600;
+}
+.metric-value {
+  font-size: 2.2rem;
+  margin: 0.25rem 0 0 0;
+  color: #1a202c;
+  font-weight: 700;
+}
+.metric-value.empty {
+  color: #a0aec0;
+}
+.empty-suggestion {
+  font-size: 0.95rem;
+  color: #e53e3e;
+  margin: 0;
+  font-weight: 500;
+}
+.btn-goto-list {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #7e80da;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: left;
+  align-self: flex-start;
+  transition: color 0.2s ease;
+}
+.btn-goto-list:hover {
+  color: #344a73;
+  text-decoration: underline;
+}
+
+/* Reglas Media Query para Responsive */
+@media (max-width: 768px) {
+  .welcome-box {
+    padding: 2rem 1rem;
+  }
+  .metric-value {
+    font-size: 1.8rem;
+  }
 }
 </style>
