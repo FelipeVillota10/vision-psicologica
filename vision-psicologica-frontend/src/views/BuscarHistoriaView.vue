@@ -416,15 +416,18 @@ const eliminarHistoria = async (id?: number) => {
 }
 
 .ver {
-  background: #dceeff;
+  background: linear-gradient(90deg, #baf5f2, #47a595);
+  color: #ffffff;
 }
 
 .editar {
-  background: #fff2cc;
+  background: linear-gradient(90deg, #478d89, #7e80da);
+  color: #ffffff;
 }
 
 .eliminar {
-  background: #ffd6d6;
+  background: linear-gradient(90deg, #acadd6, #7e80da);
+  color: #ffffff;
 }
 
 .resultado {
