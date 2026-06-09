@@ -241,7 +241,7 @@ button {
 }
 
 .btn-schedule {
-  background-color: #3498db;
+  background: linear-gradient(90deg, #baf5f2, #47a595);
   color: white;
 }
 
@@ -250,7 +250,7 @@ button {
 }
 
 .btn-clear {
-  background-color: #f1c40f;
+  background: linear-gradient(90deg, #acadd6, #7e80da);
   color: white;
 }
 

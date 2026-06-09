@@ -241,9 +241,9 @@ button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; 
 .tabla-datos th, .tabla-datos td { padding: 12px; border-bottom: 1px solid #e2e4f0; text-align: left; }
 
 .actions-group { display: flex; gap: 0.5rem; }
-.btn-edit { background: linear-gradient(90deg, #acadd6, #7e80da); color: white; padding: 5px 12px; font-size: 0.8rem; }
+.btn-edit { background: linear-gradient(90deg, #baf5f2, #47a595); color: white; padding: 5px 12px; font-size: 0.8rem; }
 /* Estilo del nuevo botón combinado con la paleta */
-.btn-history { background: linear-gradient(90deg, #344a73, #1e2d4a); color: white; padding: 5px 12px; font-size: 0.8rem; }
+.btn-history { background: linear-gradient(90deg, #acadd6, #7e80da); color: white; padding: 5px 12px; font-size: 0.8rem; }
 
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index: 1000; }
 .modal-content { background: white; padding: 2rem; border-radius: 12px; width: 380px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
