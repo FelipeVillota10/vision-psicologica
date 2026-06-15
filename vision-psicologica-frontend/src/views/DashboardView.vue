@@ -50,6 +50,16 @@
             </ul>
           </li>
 
+          <li class="menu-item" @click="toggleMenu('psicologos')">
+            <div class="menu-title">
+             <span class="menu-icon">🧠</span> Psicólogos
+            <span class="arrow">{{ menus.psicologos ? '▼' : '►' }}</span>
+          </div>
+          <ul v-if="menus.psicologos" class="submenu" @click.stop>
+            <li @click="cambiarVista('psicologos')">Gestionar Psicólogos</li>
+            </ul>
+          </li>
+
           <li class="menu-item" @click="toggleMenu('ordenamiento')">
             <div class="menu-title">
               <span class="menu-icon">📋</span> Ordenamiento
@@ -79,6 +89,7 @@
         <HistoriaView v-else-if="vistaActual === 'crearHistoria'" />
         <BuscarHistoriaView v-else-if="vistaActual === 'buscarHistoria'" />
         <CrearCitaView v-else-if="vistaActual === 'crearCita'" />
+        <PsicologosView v-else-if="vistaActual === 'psicologos'" />
 
         <div class="welcome-box" v-else>
           <h2>Panel de Control</h2>
@@ -110,6 +121,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import RegistrarClienteView from './RegistrarClienteView.vue'
 import BuscarClienteView from './BuscarClienteView.vue'
+
 import HistoriaView from './HistoriaView.vue'
 import BuscarHistoriaView from './BuscarHistoriaView.vue'
 import CrearCitaView from './CrearCitaView.vue'
@@ -124,6 +136,7 @@ const menus = ref({
   citas: false,
   historias: false,
   clientes: false,
+  psicologos: false,
   ordenamiento: false,
   afiliados: false,
 })
@@ -150,7 +163,13 @@ const cambiarVista = (vista: string) => {
 }
 
 const toggleMenu = (
-  menuName: 'citas' | 'historias' | 'clientes' | 'ordenamiento' | 'afiliados',
+  menuName:
+    | 'citas'
+    | 'historias'
+    | 'clientes'
+    | 'psicologos'
+    | 'ordenamiento'
+    | 'afiliados',
 ) => {
   menus.value[menuName] = !menus.value[menuName]
 }
