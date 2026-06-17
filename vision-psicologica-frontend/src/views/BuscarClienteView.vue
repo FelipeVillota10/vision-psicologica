@@ -102,8 +102,6 @@ const obtenerClientesDeBackend = async () => {
 }
 
 const abrirEdicion = (cliente: any) => {
-  // Usamos JSON.parse(JSON.stringify()) para crear una copia 
-  // totalmente independiente y "limpia" del objeto original
   clienteEditando.value = JSON.parse(JSON.stringify(cliente))
 } 
 

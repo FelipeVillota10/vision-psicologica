@@ -11,12 +11,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/usuario")
 @CrossOrigin(origins = "http://localhost:5173")
 public class UsuarioController {
 
     private UsuarioService usuarioService;
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     public UsuarioController (UsuarioService usuarioService){
@@ -71,13 +76,33 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUsuario(@RequestBody Map<String, String> credentials) {
+    public ResponseEntity<?> loginUsuario(@RequestBody Map<String, String> credentials, HttpServletRequest request) {
         String email = credentials.get("email");
         String contrasena = credentials.get("contrasena");
+
+        String ip = request.getRemoteAddr();
+        String origen = request.getHeader("User-Agent");
+
         boolean esValido = usuarioService.autenticar(email, contrasena);
         if (esValido) {
+            logger.atInfo()
+                    .setMessage("Acceso a la cuenta")
+                    .addKeyValue("usuario", email)
+                    .addKeyValue("ip", ip)
+                    .addKeyValue("origen", origen)
+                    .addKeyValue("resultado", "EXITOSO")
+                    .log();
+
             return ResponseEntity.ok().body(Map.of("message", "Autenticación exitosa"));
         } else {
+            logger.atWarn()
+                    .setMessage("Acceso a la cuenta")
+                    .addKeyValue("usuario", email)
+                    .addKeyValue("ip", ip)
+                    .addKeyValue("origen", origen)
+                    .addKeyValue("resultado", "FALLIDO")
+                    .log();
+
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Email o contraseña incorrectos"));
         }
     }

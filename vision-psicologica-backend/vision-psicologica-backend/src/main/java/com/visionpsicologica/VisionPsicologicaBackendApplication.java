@@ -1,18 +1,14 @@
 package com.visionpsicologica;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean; // Corrección: Importa Bean
-import org.springframework.web.servlet.config.annotation.CorsRegistry; // Importa CorsRegistry
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer; // Importa WebMvcConfigurer
-
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class VisionPsicologicaBackendApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(VisionPsicologicaBackendApplication.class, args);
     }
-
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

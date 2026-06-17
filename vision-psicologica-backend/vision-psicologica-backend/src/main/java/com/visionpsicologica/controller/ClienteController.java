@@ -7,20 +7,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-// 1. Agregas esta importación
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
+
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteController {
 
+
+
     @Autowired
     private ClienteService clienteService;
 
-    // HU-5 Punto 6: Botón "Guardar cliente" activa este endpoint
     @PostMapping
     public ResponseEntity<?> crearCliente(@Valid @RequestBody ClienteModel cliente) {
         try {
@@ -42,14 +43,12 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    @ResponseBody // Añade esto para asegurar la serialización
     public ResponseEntity<ClienteModel> actualizarCliente(@PathVariable Long id, @RequestBody ClienteModel cliente) {
-        // Imprime lo que llega al controlador
-        System.out.println("Backend recibió: " + cliente.getIdentificacion());
+        System.out.println("Backend recibió actualización para ID: " + id);
+
 
         ClienteModel actualizado = clienteService.actualizarCliente(id, cliente);
         return ResponseEntity.ok(actualizado);
     }
-
 
 }
