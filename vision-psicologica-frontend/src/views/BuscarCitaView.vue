@@ -77,7 +77,7 @@
         </table>
       </div>
     </div>
-
+    <!-- a ver si sube -->
     <!-- ── Modal: Ver detalle ── -->
     <div v-if="citaSeleccionada && modalTipo === 'ver'" class="modal-overlay" @click.self="cerrarModal">
       <div class="modal">
