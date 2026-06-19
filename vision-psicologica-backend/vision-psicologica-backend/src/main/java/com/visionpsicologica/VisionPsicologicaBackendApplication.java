@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer; // Im
 
 @SpringBootApplication
 public class VisionPsicologicaBackendApplication {
-
+// mondongo
     public static void main(String[] args) {
         SpringApplication.run(VisionPsicologicaBackendApplication.class, args);
     }
