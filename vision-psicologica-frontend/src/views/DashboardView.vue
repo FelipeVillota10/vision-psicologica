@@ -25,6 +25,7 @@
 
             <ul v-if="menus.citas" class="submenu" @click.stop>
               <li @click="cambiarVista('crearCita')">Crear Cita</li>
+              <li @click="cambiarVista('buscarCita')">Buscar Citas</li>  <!-- ← NUEVO -->
             </ul>
           </li>
 
@@ -79,6 +80,8 @@
         <HistoriaView v-else-if="vistaActual === 'crearHistoria'" />
         <BuscarHistoriaView v-else-if="vistaActual === 'buscarHistoria'" />
         <CrearCitaView v-else-if="vistaActual === 'crearCita'" />
+        <BuscarCitaView v-else-if="vistaActual === 'buscarCita'" />
+
 
         <div class="welcome-box" v-else>
           <h2>Panel de Control</h2>
@@ -113,6 +116,7 @@ import BuscarClienteView from './BuscarClienteView.vue'
 import HistoriaView from './HistoriaView.vue'
 import BuscarHistoriaView from './BuscarHistoriaView.vue'
 import CrearCitaView from './CrearCitaView.vue'
+import BuscarCitaView from './BuscarCitaView.vue'
 
 const router = useRouter()
 

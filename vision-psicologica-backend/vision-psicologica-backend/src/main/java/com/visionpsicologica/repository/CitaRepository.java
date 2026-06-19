@@ -17,7 +17,8 @@ public interface CitaRepository extends JpaRepository<CitaModel, Long> {
 
     List<CitaModel> findByClienteId(Long idCliente);
     List<CitaModel> findByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin);
-
+    @Query("SELECT c FROM CitaModel c WHERE LOWER(c.cliente.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))")
+    List<CitaModel> findByClienteNombreContainingIgnoreCase(@Param("nombre") String nombre);
 
     @Query("SELECT COUNT(c) > 0 FROM CitaModel c WHERE c.psicologo.id = :idPsicologo " +
             "AND (:inicio < c.fechaFin AND :fin > c.fechaInicio)")

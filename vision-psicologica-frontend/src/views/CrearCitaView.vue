@@ -104,7 +104,7 @@ const form = ref({
 // URLs base de tu backend de Spring Boot
 const API_URL_USUARIOS = 'http://localhost:8080/usuario'
 const API_URL_CLIENTES = 'http://localhost:8080/api/clientes' // Ajusta a /cliente si es en singular en tu sistema
-const API_URL_CITAS = 'http://localhost:8080/citas'
+const API_URL_CITAS = 'http://localhost:8080/api/citas'
 
 // Cargar los datos reales al montar el componente
 onMounted(async () => {
@@ -241,7 +241,7 @@ button {
 }
 
 .btn-schedule {
-  background: linear-gradient(90deg, #baf5f2, #47a595);
+  background-color: #3498db;
   color: white;
 }
 
@@ -250,7 +250,7 @@ button {
 }
 
 .btn-clear {
-  background: linear-gradient(90deg, #acadd6, #7e80da);
+  background-color: #f1c40f;
   color: white;
 }
 

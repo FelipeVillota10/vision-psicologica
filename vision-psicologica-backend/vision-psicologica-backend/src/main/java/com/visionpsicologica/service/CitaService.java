@@ -128,6 +128,29 @@ public class CitaService {
         }
         return citaRepository.findByFechaInicioBetween(inicio, fin);
     }
+    // ... agrega esto después de tu método obtenerCitasPorRangoDeFechas ...
+
+    public List<CitaModel> buscarCitasPorNombrePaciente(String nombre) {
+        if (nombre == null || nombre.isEmpty()) {
+            return citaRepository.findAll();
+        }
+        return citaRepository.findByClienteNombreContainingIgnoreCase(nombre);
+    }
+
+    public CitaModel actualizarCita(Long id, CitaModel citaActualizada) {
+        CitaModel citaExistente = citaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No se encontró la cita con ID: " + id));
+
+        // Actualizamos los campos necesarios
+        citaExistente.setFechaInicio(citaActualizada.getFechaInicio());
+        citaExistente.setFechaFin(citaActualizada.getFechaFin());
+
+        citaExistente.setEstado(citaActualizada.getEstado());
+        citaExistente.setMotivo(citaActualizada.getMotivo());
+        citaExistente.setNotas(citaActualizada.getNotas());
+
+        return citaRepository.save(citaExistente);
+    }
 
     public void eliminarCita(Long idCita) {
         if (!citaRepository.existsById(idCita)) {

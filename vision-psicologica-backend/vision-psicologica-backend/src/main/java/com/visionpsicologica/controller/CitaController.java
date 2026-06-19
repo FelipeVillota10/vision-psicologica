@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/citas")
+@RequestMapping("/api/citas")
 @CrossOrigin(origins = "http://localhost:5173")
 public class CitaController {
 
@@ -36,7 +36,12 @@ public class CitaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CitaModel>> obtenerTodasLasCitas() {
+    public ResponseEntity<List<CitaModel>> obtenerCitas(
+            @RequestParam(required = false) String nombrePaciente) {
+
+        if (nombrePaciente != null && !nombrePaciente.isEmpty()) {
+            return ResponseEntity.ok(citaService.buscarCitasPorNombrePaciente(nombrePaciente));
+        }
         return ResponseEntity.ok(citaService.obtenerTodasLasCitas());
     }
 
@@ -90,6 +95,17 @@ public class CitaController {
             return ResponseEntity.ok().body(Map.of("message", "La cita ha sido cancelada y eliminada exitosamente del sistema"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        }
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> modificarCita(@PathVariable Long id, @RequestBody CitaModel citaActualizada) {
+        try {
+            CitaModel cita = citaService.actualizarCita(id, citaActualizada);
+            return ResponseEntity.ok(cita);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Error al procesar la actualización"));
         }
     }
 }
