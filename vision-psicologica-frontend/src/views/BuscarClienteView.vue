@@ -45,6 +45,7 @@
               <div class="actions-group">
                 <button class="btn-edit" @click="abrirEdicion(cliente)">Editar</button>
                 <button class="btn-history" @click="abrirHistorialCitas(cliente)">Historial</button>
+                <button class="btn-schedule" @click="abrirAgendar(cliente)">Agendar</button>
               </div>
             </td>
           </tr>
@@ -56,7 +57,6 @@
       </div>
     </div>
 
-    <!-- MODAL: EDITAR CLIENTE -->
     <div v-if="clienteEditando" class="modal-overlay">
       <div class="modal-content">
         <h3>Editar Cliente</h3>
@@ -77,7 +77,6 @@
       </div>
     </div>
 
-    <!-- MODAL: HU-23 HISTORIAL DE CITAS DEL PACIENTE -->
     <div v-if="mostrarModalHistorial" class="modal-overlay">
       <div class="modal-content modal-large">
         <div class="modal-header-citas">
@@ -86,7 +85,6 @@
         </div>
         
         <div class="citas-container">
-          <!-- Si el paciente tiene citas registradas -->
           <table class="tabla-datos tabla-citas" v-if="historialCitas.length > 0">
             <thead>
               <tr>
@@ -104,7 +102,6 @@
             </tbody>
           </table>
 
-          <!-- Mensaje amigable HU-23 si es un paciente nuevo o sin citas -->
           <div class="no-citas" v-else>
             <p>No se encontraron citas registradas.</p>
           </div>
@@ -112,6 +109,32 @@
 
         <div class="modal-actions close-action">
           <button class="btn-close-modal" @click="cerrarHistorial">Cerrar Historial</button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="clienteParaAgendar" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Agendar Cita</h3>
+        <span class="paciente-tag" style="margin-bottom: 15px; display: inline-block;">
+          Paciente: <strong>{{ clienteParaAgendar.nombre }}</strong>
+        </span>
+        <div class="form-edit">
+          <label>Psicólogo:</label>
+          <select v-model="formCita.psicologoId" class="modal-select">
+            <option value="">Seleccione un psicólogo...</option>
+            <option v-for="psic in psicologos" :key="psic.id" :value="psic.id">
+              {{ psic.nombre }}
+            </option>
+          </select>
+          <label>Fecha inicio:</label>
+          <input type="datetime-local" v-model="formCita.fechaInicio" />
+          <label>Fecha fin:</label>
+          <input type="datetime-local" v-model="formCita.fechaFin" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn-search" @click="confirmarAgendar">Confirmar</button>
+          <button class="btn-clear" @click="cerrarAgendar">Cancelar</button>
         </div>
       </div>
     </div>
@@ -130,6 +153,15 @@ const clienteEditando = ref<any | null>(null)
 const mostrarModalHistorial = ref(false)
 const clienteSeleccionado = ref<any | null>(null)
 const historialCitas = ref<any[]>([])
+
+// 3. VARIABLES PARA AGENDAR CITA
+const clienteParaAgendar = ref<any | null>(null)
+const psicologos = ref<any[]>([])
+const formCita = ref({
+  psicologoId: '',
+  fechaInicio: '',
+  fechaFin: ''
+})
 
 const clientesFiltrados = computed(() => {
   const query = terminoBusqueda.value.trim().toLowerCase()
@@ -151,19 +183,29 @@ const obtenerClientesDeBackend = async () => {
   }
 }
 
+// 4. LÓGICA PARA CARGAR PSICÓLOGOS EN EL ONMOUNTED
+onMounted(async () => {
+  await obtenerClientesDeBackend()
+  try {
+    const resPsicologos = await fetch('http://localhost:8080/usuario')
+    if (resPsicologos.ok) {
+      psicologos.value = await resPsicologos.json()
+    }
+  } catch (error) {
+    console.error('Error al cargar psicólogos:', error)
+  }
+})
+
 const abrirEdicion = (cliente: any) => {
   clienteEditando.value = JSON.parse(JSON.stringify(cliente))
 } 
 
-// Métodos para la HU-23 (Cargar citas desde tu CitaController)
 const abrirHistorialCitas = async (cliente: any) => {
   clienteSeleccionado.value = cliente
   try {
-    // Apunta al puerto 8080 y al endpoint /citas/cliente/{id} de tu controlador de Spring Boot
     const response = await fetch(`http://localhost:8080/citas/cliente/${cliente.id}`)
     if (response.ok) {
       historialCitas.value = await response.json()
-      // Ordenamos las citas cronológicamente (de la más reciente a la más antigua)
       historialCitas.value.sort((a, b) => new Date(b.fechaInicio).getTime() - new Date(a.fechaInicio).getTime())
       mostrarModalHistorial.value = true
     } else {
@@ -181,7 +223,49 @@ const cerrarHistorial = () => {
   historialCitas.value = []
 }
 
-// Funciones helpers para formatear fechas y horas estéticamente
+// 5. MÉTODOS PARA AGENDAR CITA
+const abrirAgendar = (cliente: any) => {
+  clienteParaAgendar.value = cliente
+}
+
+const cerrarAgendar = () => {
+  clienteParaAgendar.value = null
+  formCita.value = { psicologoId: '', fechaInicio: '', fechaFin: '' }
+}
+
+const confirmarAgendar = async () => {
+  if (!formCita.value.psicologoId || !formCita.value.fechaInicio || !formCita.value.fechaFin) {
+    alert("Por favor completa todos los campos.")
+    return
+  }
+
+  const payload = {
+    cliente: { id: clienteParaAgendar.value.id },
+    psicologo: { id: Number(formCita.value.psicologoId) },
+    fechaInicio: formCita.value.fechaInicio,
+    fechaFin: formCita.value.fechaFin
+  }
+
+  try {
+    const res = await fetch('http://localhost:8080/api/citas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    
+    if (res.ok) {
+      alert("¡Cita agendada correctamente!")
+      cerrarAgendar()
+    } else {
+      const data = await res.json()
+      alert(`Error al agendar: ${data.error || 'Verifica la disponibilidad'}`)
+    }
+  } catch (error) {
+    console.error("Error conectando al servidor:", error)
+    alert("Hubo un problema de conexión con el servidor.")
+  }
+}
+
 const formatearFecha = (fechaStr: string) => {
   if (!fechaStr) return ''
   const fecha = new Date(fechaStr)
@@ -224,8 +308,6 @@ const guardarCambios = async () => {
 }
 
 const limpiarBusqueda = () => terminoBusqueda.value = ''
-
-onMounted(obtenerClientesDeBackend)
 </script>
 
 <style scoped>
@@ -242,8 +324,23 @@ button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; 
 
 .actions-group { display: flex; gap: 0.5rem; }
 .btn-edit { background: linear-gradient(90deg, #acadd6, #7e80da); color: white; padding: 5px 12px; font-size: 0.8rem; }
-/* Estilo del nuevo botón combinado con la paleta */
 .btn-history { background: linear-gradient(90deg, #344a73, #1e2d4a); color: white; padding: 5px 12px; font-size: 0.8rem; }
+
+/* 6. ESTILO DEL NUEVO BOTÓN AGENDAR */
+.btn-schedule { 
+  background: linear-gradient(90deg, #3498db, #2980b9); 
+  color: white; 
+  padding: 5px 12px; 
+  font-size: 0.8rem; 
+}
+
+/* Estilo para el select dentro del modal */
+.modal-select {
+  padding: 10px; 
+  border: 1.5px solid #b8b9e0; 
+  border-radius: 8px;
+  width: 100%;
+}
 
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index: 1000; }
 .modal-content { background: white; padding: 2rem; border-radius: 12px; width: 380px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
@@ -251,7 +348,6 @@ button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; 
 .form-edit { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1rem; }
 .modal-actions { display: flex; gap: 10px; }
 
-/* Estilos especiales para el Historial de Citas */
 .modal-header-citas { margin-bottom: 1.5rem; border-bottom: 2px solid #f4f5f9; padding-bottom: 0.75rem; }
 .modal-header-citas h3 { color: #344a73; margin: 0 0 5px 0; }
 .paciente-tag { background-color: #e2e4f0; padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; color: #1e2d4a; }
