@@ -1,14 +1,21 @@
 <template>
   <div class="appointment-container">
     <div class="appointment-card">
-      <h2>Crea tu próxima cita</h2>
-      <p class="subtitle">Completa la información para agendar una nueva cita</p>
+
+      <!-- Encabezado con logo (mismo estilo que HistoriaView) -->
+      <div class="appointment-header">
+        <img src="@/assets/mariposa.png" alt="Visión Psicológica" class="appointment-logo" />
+        <div class="title-container">
+          <h2>Crea tu próxima cita</h2>
+          <p class="subtitle">Completa la información para agendar una nueva cita</p>
+        </div>
+      </div>
 
       <form @submit.prevent="agendarCita">
         <div class="form-group">
-          <label for="cliente">Cliente:</label>
+          <label for="cliente">Cliente <span class="required">*</span></label>
           <select id="cliente" v-model="form.clienteId" required>
-            <option value="">Seleccione un cliente</option>
+            <option value="" disabled>Seleccione un cliente</option>
             <option
               v-for="cliente in clientes"
               :key="cliente.id"
@@ -20,9 +27,9 @@
         </div>
 
         <div class="form-group">
-          <label for="psicologo">Psicólogo:</label>
+          <label for="psicologo">Psicólogo <span class="required">*</span></label>
           <select id="psicologo" v-model="form.psicologoId" required>
-            <option value="">Seleccione un psicólogo</option>
+            <option value="" disabled>Seleccione un psicólogo</option>
             <option
               v-for="psicologo in psicologos"
               :key="psicologo.id"
@@ -34,7 +41,7 @@
         </div>
 
         <div class="form-group">
-          <label for="fechaInicio">Fecha inicio:</label>
+          <label for="fechaInicio">Fecha inicio <span class="required">*</span></label>
           <input
             type="datetime-local"
             id="fechaInicio"
@@ -44,7 +51,7 @@
         </div>
 
         <div class="form-group">
-          <label for="fechaFin">Fecha fin:</label>
+          <label for="fechaFin">Fecha fin <span class="required">*</span></label>
           <input
             type="datetime-local"
             id="fechaFin"
@@ -57,14 +64,16 @@
           <button
             type="submit"
             class="btn-schedule"
+            :disabled="cargando"
           >
-            Agendar
+            {{ cargando ? 'Agendando...' : 'Agendar' }}
           </button>
 
           <button
             type="button"
             class="btn-clear"
             @click="limpiarFormulario"
+            :disabled="cargando"
           >
             Limpiar
           </button>
@@ -92,6 +101,7 @@ interface Psicologo {
 // Estados reactivos cargados desde la base de datos
 const clientes = ref<Cliente[]>([])
 const psicologos = ref<Psicologo[]>([])
+const cargando = ref(false)
 
 // Estructura del formulario plano en el frontend
 const form = ref({
@@ -146,6 +156,8 @@ const agendarCita = async () => {
   }
 
   try {
+    cargando.value = true
+
     const respuesta = await fetch(API_URL_CITAS, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -164,6 +176,8 @@ const agendarCita = async () => {
   } catch (error) {
     console.error('Error de red al conectar con el servidor:', error)
     alert('Hubo un problema de conexión con el servidor de Spring Boot.')
+  } finally {
+    cargando.value = false
   }
 }
 
@@ -176,85 +190,152 @@ const limpiarFormulario = () => {
 </script>
 
 <style scoped>
+/* ── Contenedor principal ── */
 .appointment-container {
   display: flex;
+  align-items: flex-start;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.appointment-card {
-  background: white;
-  padding: 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  box-sizing: border-box;
   width: 100%;
-  max-width: 500px;
-  text-align: center;
+  min-height: 100%;
 }
 
-h2 {
-  margin-bottom: 0.5rem;
-  color: #2c3e50;
+/* ── Card principal (mismo estilo que HistoriaView) ── */
+.appointment-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2.5rem 3.5rem;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0 8px 30px rgba(29, 158, 117, 0.12);
+  border: 1px solid #c8f0e6;
 }
 
-.subtitle {
-  color: #7f8c8d;
+/* ── Encabezado con logo ── */
+.appointment-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
   margin-bottom: 2rem;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
+.appointment-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.title-container {
+  flex: 1;
   text-align: left;
+}
+
+h2 {
+  color: #0f6e56;
+  margin: 0 0 0.4rem 0;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  color: #5f6b7a;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ── Formulario ── */
+.form-group {
   margin-bottom: 1.2rem;
 }
 
 label {
+  display: block;
   font-weight: 600;
+  color: #0f6e56;
   margin-bottom: 0.5rem;
-}
-
-input,
-select {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
   font-size: 1rem;
 }
 
+.required {
+  color: #e74c3c;
+}
+
+select,
+input[type="datetime-local"] {
+  width: 100%;
+  padding: 12px 18px;
+  border: 2px solid #9fe1cb;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #f8fdfb;
+  color: #1a202c;
+  transition: all 0.3s;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+select:focus,
+input[type="datetime-local"]:focus {
+  outline: none;
+  border-color: #1d9e75;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(29, 158, 117, 0.12);
+}
+
+/* ── Botones (mismo gradiente que HistoriaView) ── */
 .button-group {
   display: flex;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  gap: 14px;
+  margin-top: 2rem;
 }
 
 button {
   flex: 1;
-  padding: 0.75rem;
+  padding: 12px 20px;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: bold;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .btn-schedule {
-  background-color: #3498db;
-  color: white;
-}
-
-.btn-schedule:hover {
-  background-color: #2980b9;
+  background: linear-gradient(90deg, #baf5f2, #47a595);
+  color: rgb(253, 253, 253);
 }
 
 .btn-clear {
-  background-color: #f1c40f;
-  color: white;
+  background: linear-gradient(90deg, #acadd6, #7e80da);
+  color: rgb(255, 255, 255);
 }
 
-.btn-clear:hover {
-  background-color: #f39c12;
+.btn-schedule:hover:not(:disabled),
+.btn-clear:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-2px);
+}
+
+.btn-schedule:disabled,
+.btn-clear:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Responsivo ── */
+@media (max-width: 600px) {
+  .appointment-card {
+    padding: 1.8rem 1.5rem;
+  }
+  .appointment-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.6rem;
+  }
+  .title-container {
+    text-align: center;
+  }
 }
 </style>
