@@ -51,6 +51,16 @@
             </ul>
           </li>
 
+          <li class="menu-item" @click="toggleMenu('psicologos')">
+            <div class="menu-title">
+              <span class="menu-icon">🩺</span> Psicólogos
+              <span class="arrow">{{ menus.psicologos ? '▼' : '►' }}</span>
+            </div>
+            <ul v-if="menus.psicologos" class="submenu" @click.stop>
+            <li @click="cambiarVista('psicologos')">Ver Psicólogos</li>
+            </ul>
+          </li>
+
           <li class="menu-item" @click="toggleMenu('ordenamiento')">
             <div class="menu-title">
               <span class="menu-icon">📋</span> Ordenamiento
@@ -81,6 +91,7 @@
         <BuscarHistoriaView v-else-if="vistaActual === 'buscarHistoria'" />
         <CrearCitaView v-else-if="vistaActual === 'crearCita'" />
         <BuscarCitaView v-else-if="vistaActual === 'buscarCita'" />
+        <PsicologosView v-else-if="vistaActual === 'psicologos'" />
 
 
         <div class="welcome-box" v-else>
@@ -117,6 +128,7 @@ import HistoriaView from './HistoriaView.vue'
 import BuscarHistoriaView from './BuscarHistoriaView.vue'
 import CrearCitaView from './CrearCitaView.vue'
 import BuscarCitaView from './BuscarCitaView.vue'
+import PsicologosView from './PsicologosView.vue'
 
 const router = useRouter()
 
@@ -128,6 +140,7 @@ const menus = ref({
   citas: false,
   historias: false,
   clientes: false,
+  psicologos: false,
   ordenamiento: false,
   afiliados: false,
 })
@@ -154,7 +167,7 @@ const cambiarVista = (vista: string) => {
 }
 
 const toggleMenu = (
-  menuName: 'citas' | 'historias' | 'clientes' | 'ordenamiento' | 'afiliados',
+  menuName: 'citas' | 'historias' | 'clientes' | 'psicologos' | 'ordenamiento' | 'afiliados',
 ) => {
   menus.value[menuName] = !menus.value[menuName]
 }
