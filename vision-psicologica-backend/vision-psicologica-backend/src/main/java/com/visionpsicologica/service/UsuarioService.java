@@ -37,10 +37,28 @@ public class UsuarioService {
 
     // Actualizar usuario (también sin hash)
     public UsuarioModel updateUsuario(UsuarioModel usuarioModel) {
-
-        if (usuarioModel.getContrasena() != null && !usuarioModel.getContrasena().isEmpty()) {
+        if (usuarioModel.getId() == null) {
+            throw new IllegalArgumentException("El ID del usuario es obligatorio para actualizar");
         }
-        return usuarioRepository.save(usuarioModel);
+
+        // 1. Buscamos el registro actual e íntegro que reside en la base de datos
+        return usuarioRepository.findById(usuarioModel.getId())
+                .map(usuarioExistente -> {
+                    // 2. Modificamos los campos comunes provenientes del formulario
+                    usuarioExistente.setNombre(usuarioModel.getNombre());
+                    usuarioExistente.setIdentificacion(usuarioModel.getIdentificacion());
+                    usuarioExistente.setEmail(usuarioModel.getEmail());
+
+                    // 3. 🔒 Validamos si el usuario de verdad digitó una nueva contraseña
+                    if (usuarioModel.getContrasena() != null && !usuarioModel.getContrasena().trim().isEmpty()) {
+                        usuarioExistente.setContrasena(usuarioModel.getContrasena());
+                    }
+                    // Si 'usuarioModel.getContrasena()' es null, la clave original NO se toca
+
+                    // 4. Guardamos la entidad persistente ya mezclada con los cambios
+                    return usuarioRepository.save(usuarioExistente);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("El usuario con ID " + usuarioModel.getId() + " no existe"));
     }
 
     public void deleteUsuario(Long id) {

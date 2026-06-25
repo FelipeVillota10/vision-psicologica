@@ -22,11 +22,6 @@ public class UsuarioHistoriaController {
         this.usuarioHistoriaService = usuarioHistoriaService;
     }
 
-    /**
-     * OBJETIVO FINAL: Endpoint para traer la lista de usuarios (psicólogos)
-     * que tienen acceso concedido a una historia clínica específica.
-     * URL: GET http://localhost:8080/usuarios-historias/historia/{idHistoria}
-     */
     @GetMapping("/historia/{idHistoria}")
     public ResponseEntity<List<UsuarioHistoriaModel>> listarUsuariosPorHistoriaId(@PathVariable Long idHistoria) {
         try {
@@ -37,10 +32,7 @@ public class UsuarioHistoriaController {
         }
     }
 
-    /**
-     * Endpoint para otorgar acceso a un psicólogo sobre un expediente clínico.
-     * URL: POST http://localhost:8080/usuarios-historias/asignar
-     */
+
     @PostMapping("/asignar")
     public ResponseEntity<?> asignarAcceso(@RequestBody UsuarioHistoriaModel usuarioHistoriaModel) {
         try {
@@ -52,11 +44,6 @@ public class UsuarioHistoriaController {
         }
     }
 
-    /**
-     * Endpoint para revocar/eliminar el permiso de acceso.
-     * Al ser una llave compuesta, solicita ambos identificadores como parámetros de consulta.
-     * URL: DELETE http://localhost:8080/usuarios-historias/revocar?idUsuario=X&idHistoria=Y
-     */
     @DeleteMapping("/revocar")
     public ResponseEntity<?> revocarAcceso(
             @RequestParam(name = "idUsuario") Long idUsuario,
