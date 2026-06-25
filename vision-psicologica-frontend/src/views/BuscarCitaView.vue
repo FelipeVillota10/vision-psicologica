@@ -2,7 +2,6 @@
   <div class="buscar-cita-container">
     <div class="buscar-cita-card">
 
-      <!-- Encabezado con logo -->
       <div class="buscar-header">
         <img src="@/assets/mariposa.png" alt="Visión Psicológica" class="buscar-logo" />
         <div class="title-container">
@@ -11,37 +10,54 @@
         </div>
       </div>
 
-      <!-- Barra de búsqueda -->
-      <div class="search-bar">
-        <span class="search-icon">🔍</span>
-        <input
-          v-model="busqueda"
-          type="text"
-          placeholder="Buscar por nombre del paciente..."
-          class="search-input"
-          @input="filtrarCitas"
-        />
-        <button v-if="busqueda" class="clear-btn" @click="limpiarBusqueda">✕</button>
+      <div class="filtros-grid">
+        <div class="filtro-field">
+          <label class="field-label">Buscar por paciente</label>
+          <div class="search-bar">
+            <span class="search-icon">👤</span>
+            <input
+              v-model="busquedaPaciente"
+              type="text"
+              placeholder="Nombre del paciente..."
+              class="search-input"
+              @input="filtrarCitas"
+            />
+            <button v-if="busquedaPaciente" class="clear-btn" @click="limpiarPaciente">✕</button>
+          </div>
+        </div>
+
+        <div class="filtro-field">
+          <label class="field-label">Palabras Clave (Motivo / Notas)</label>
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input
+              v-model="busquedaClaves"
+              type="text"
+              placeholder="Ej: Seguimiento, ansiedad..."
+              class="search-input"
+              @input="filtrarCitas"
+            />
+            <button v-if="busquedaClaves" class="clear-btn" @click="limpiarClaves">✕</button>
+          </div>
+        </div>
       </div>
 
-      <!-- Estado: Cargando -->
       <div v-if="cargando" class="estado-info">
         <span>⏳</span> Cargando citas...
       </div>
 
-      <!-- Estado: Error -->
       <div v-else-if="error" class="estado-error">
         ⚠️ {{ error }}
       </div>
 
-      <!-- Estado: Sin resultados -->
       <div v-else-if="citasFiltradas.length === 0" class="estado-info">
         <span class="empty-icon">📭</span>
-        <p v-if="busqueda">No se encontraron citas para <strong>"{{ busqueda }}"</strong>.</p>
+        <p v-if="busquedaPaciente || busquedaClaves">
+          <strong>No se encontraron historias clínicas con esa búsqueda.</strong>
+        </p>
         <p v-else>No hay citas registradas en el sistema aún.</p>
       </div>
 
-      <!-- Tabla de citas -->
       <div v-else class="tabla-wrapper">
         <table class="tabla-citas">
           <thead>
@@ -60,8 +76,8 @@
               <td class="td-index">{{ index + 1 }}</td>
               <td class="td-paciente">{{ cita.nombrePaciente }}</td>
               <td>{{ formatearFecha(cita.fecha) }}</td>
-              <td>{{ cita.hora }}</td>
-              <td class="td-motivo">{{ cita.motivo || '—' }}</td>
+              <td class="txt-bold">{{ cita.hora }}</td>
+              <td class="td-motivo" v-html="resaltarTexto(cita.motivo)"></td>
               <td>
                 <span :class="['badge-estado', estadoClase(cita.estado)]">
                   {{ cita.estado }}
@@ -77,8 +93,7 @@
         </table>
       </div>
     </div>
-    <!-- a ver si sube -->
-    <!-- ── Modal: Ver detalle ── -->
+
     <div v-if="citaSeleccionada && modalTipo === 'ver'" class="modal-overlay" @click.self="cerrarModal">
       <div class="modal">
         <div class="modal-header-row">
@@ -100,17 +115,17 @@
           </div>
           <div class="modal-field">
             <span class="field-label">Estado</span>
-            <span :class="['badge-estado', estadoClase(citaSeleccionada.estado)]">
+             <span :class="['badge-estado', estadoClase(citaSeleccionada.estado)]">
               {{ citaSeleccionada.estado }}
             </span>
           </div>
           <div class="modal-field full-width">
             <span class="field-label">Motivo</span>
-            <span class="field-value">{{ citaSeleccionada.motivo || 'Sin motivo registrado' }}</span>
+            <span class="field-value" v-html="resaltarTexto(citaSeleccionada.motivo) || 'Sin motivo registrado'"></span>
           </div>
           <div class="modal-field full-width">
             <span class="field-label">Notas</span>
-            <span class="field-value">{{ citaSeleccionada.notas || 'Sin notas adicionales' }}</span>
+            <span class="field-value" v-html="resaltarTexto(citaSeleccionada.notas) || 'Sin notas adicionales'"></span>
           </div>
         </div>
         <div class="button-group">
@@ -119,11 +134,10 @@
       </div>
     </div>
 
-    <!-- ── Modal: Modificar ── -->
     <div v-if="citaSeleccionada && modalTipo === 'editar'" class="modal-overlay" @click.self="cerrarModal">
       <div class="modal">
         <div class="modal-header-row">
-          <img src="@/assets/mariposa.png" alt="logo" class="modal-logo" />
+           <img src="@/assets/mariposa.png" alt="logo" class="modal-logo" />
           <h3>Modificar Cita</h3>
         </div>
         <div class="modal-grid">
@@ -146,7 +160,7 @@
           </div>
           <div class="modal-field full-width">
             <label class="field-label" for="editMotivo">Motivo</label>
-            <input id="editMotivo" v-model="citaEditada.motivo" type="text" class="field-input" />
+             <input id="editMotivo" v-model="citaEditada.motivo" type="text" class="field-input" />
           </div>
           <div class="modal-field full-width">
             <label class="field-label" for="editNotas">Notas</label>
@@ -154,7 +168,7 @@
           </div>
         </div>
         <div class="button-group">
-          <button class="btn-primary" @click="guardarCambios" :disabled="guardando">
+           <button class="btn-primary" @click="guardarCambios" :disabled="guardando">
             {{ guardando ? 'Guardando...' : 'Guardar Cambios' }}
           </button>
           <button class="btn-secondary" @click="cerrarModal" :disabled="guardando">Cancelar</button>
@@ -162,18 +176,16 @@
       </div>
     </div>
 
-    <!-- ── Modal: Confirmar eliminación ── -->
     <div v-if="citaSeleccionada && modalTipo === 'eliminar'" class="modal-overlay" @click.self="cerrarModal">
       <div class="modal modal-small">
         <div class="modal-header-row">
           <img src="@/assets/mariposa.png" alt="logo" class="modal-logo" />
-          <h3>Confirmar Eliminación</h3>
+           <h3>Confirmar Eliminación</h3>
         </div>
         <p class="modal-mensaje">
           ¿Estás seguro que deseas eliminar la cita de
           <strong>{{ citaSeleccionada.nombrePaciente }}</strong> del
-          <strong>{{ formatearFecha(citaSeleccionada.fecha) }}</strong>?
-          Esta acción no se puede deshacer.
+          <strong>{{ formatearFecha(citaSeleccionada.fecha) }}</strong>? Esta acción no se puede deshacer.
         </p>
         <div class="button-group">
           <button class="btn-danger" @click="eliminarCita" :disabled="eliminando">
@@ -203,7 +215,11 @@ interface Cita {
 // ── Estado ─────────────────────────────────────────────────────────────────
 const citas            = ref<Cita[]>([])
 const citasFiltradas   = ref<Cita[]>([])
-const busqueda         = ref('')
+
+// Nuevas variables para los filtros combinados
+const busquedaPaciente = ref('')
+const busquedaClaves   = ref('')
+
 const cargando         = ref(false)
 const guardando        = ref(false)
 const eliminando       = ref(false)
@@ -232,15 +248,46 @@ const cargarCitas = async () => {
 
 // ── Búsqueda ───────────────────────────────────────────────────────────────
 const filtrarCitas = () => {
-  const termino = busqueda.value.toLowerCase().trim()
-  citasFiltradas.value = termino
-    ? citas.value.filter(c => c.nombrePaciente.toLowerCase().includes(termino))
-    : [...citas.value]
+  const terminoPaciente = busquedaPaciente.value.toLowerCase().trim()
+  const terminoClaves = busquedaClaves.value.toLowerCase().trim()
+
+  citasFiltradas.value = citas.value.filter(c => {
+    // 1. Filtrar por paciente (si el campo está vacío, pasa la validación)
+    const coincidePaciente = !terminoPaciente || c.nombrePaciente?.toLowerCase().includes(terminoPaciente)
+
+    // 2. Filtrar por palabras clave en motivo o notas (coincidencia parcial)
+    const motivoStr = c.motivo ? c.motivo.toLowerCase() : ''
+    const notasStr = c.notas ? c.notas.toLowerCase() : ''
+    const coincideClaves = !terminoClaves || motivoStr.includes(terminoClaves) || notasStr.includes(terminoClaves)
+
+    // Retorna true solo si cumple ambas condiciones (Combina los filtros)
+    return coincidePaciente && coincideClaves
+  })
 }
 
-const limpiarBusqueda = () => {
-  busqueda.value = ''
-  citasFiltradas.value = [...citas.value]
+const limpiarPaciente = () => {
+  busquedaPaciente.value = ''
+  filtrarCitas()
+}
+
+const limpiarClaves = () => {
+  busquedaClaves.value = ''
+  filtrarCitas()
+}
+
+// Función para envolver la palabra clave en una etiqueta de resaltado (<mark>)
+const resaltarTexto = (texto: string | undefined) => {
+  if (!texto) return '—'
+  const termino = busquedaClaves.value.trim()
+  
+  if (!termino) return texto // Si no hay búsqueda, retorna el texto original
+
+  // Escapamos caracteres especiales de regex por seguridad
+  const termEscaped = termino.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const regex = new RegExp(`(${termEscaped})`, 'gi')
+  
+  // Reemplaza la coincidencia exacta (respetando mayúsculas/minúsculas originales) con la clase de resaltado
+  return texto.replace(regex, '<mark class="highlight-text">$1</mark>')
 }
 
 // ── Modales ────────────────────────────────────────────────────────────────
@@ -337,7 +384,7 @@ onMounted(() => cargarCitas())
   min-height: 100%;
 }
 
-/* ── Card principal (mismo estilo que HistoriaView) ── */
+/* ── Card principal ── */
 .buscar-cita-card {
   background: #fff;
   border-radius: 20px;
@@ -380,6 +427,28 @@ h2 {
   font-size: 1rem;
 }
 
+/* ── Filtros Combinados ── */
+.filtros-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dividimos en dos columnas para los filtros */
+  gap: 1.5rem;
+  margin-bottom: 1.8rem;
+}
+
+.filtro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #0f6e56;
+}
+
 /* ── Barra de búsqueda ── */
 .search-bar {
   display: flex;
@@ -389,7 +458,6 @@ h2 {
   border: 2px solid #9fe1cb;
   border-radius: 10px;
   padding: 0.6rem 1rem;
-  margin-bottom: 1.8rem;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
@@ -420,6 +488,15 @@ h2 {
   transition: color 0.2s;
 }
 .clear-btn:hover { color: #e74c3c; }
+
+/* ── Clase para el texto resaltado (Requisito 5) ── */
+:deep(.highlight-text) {
+  background-color: #fefcbf; /* Un amarillo sutil y profesional */
+  color: #744210;
+  padding: 0 2px;
+  border-radius: 3px;
+  font-weight: bold;
+}
 
 /* ── Estados vacío / cargando / error ── */
 .estado-info,
@@ -472,6 +549,7 @@ h2 {
 
 .td-index   { color: #9fe1cb; font-weight: 700; width: 40px; }
 .td-paciente { font-weight: 600; color: #0f6e56; }
+.txt-bold { font-weight: 700; }
 .td-motivo  {
   max-width: 180px;
   white-space: nowrap;
@@ -517,7 +595,7 @@ h2 {
 .btn-editar   { background: linear-gradient(90deg, #acadd6, #7e80da); color: white; }
 .btn-eliminar { background: #fed7d7; color: #9b2c2c; }
 
-/* ── Modal overlay ── */
+/* ── Modales ── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -529,7 +607,6 @@ h2 {
   padding: 1rem;
 }
 
-/* ── Modal card (mismo estilo que HistoriaView card) ── */
 .modal {
   background: white;
   border-radius: 20px;
@@ -548,7 +625,6 @@ h2 {
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* ── Encabezado del modal ── */
 .modal-header-row {
   display: flex;
   align-items: center;
@@ -569,7 +645,6 @@ h2 {
   font-size: 1.5rem;
 }
 
-/* ── Grid de campos ── */
 .modal-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -585,22 +660,7 @@ h2 {
 
 .full-width { grid-column: 1 / -1; }
 
-.field-label {
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: #0f6e56;
-}
-
-.required { color: #e74c3c; }
-
-.field-value {
-  font-size: 1rem;
-  color: #1a202c;
-}
-
-/* Inputs del modal (mismo estilo que HistoriaView) */
+/* ── Inputs del modal ── */
 .field-input {
   width: 100%;
   padding: 12px 18px;
@@ -630,7 +690,7 @@ h2 {
   font-size: 1rem;
 }
 
-/* ── Botones de modal (mismo gradiente que HistoriaView) ── */
+/* ── Botones de modal ── */
 .button-group {
   display: flex;
   gap: 14px;
@@ -650,20 +710,9 @@ h2 {
   transition: opacity 0.2s, transform 0.2s;
 }
 
-.btn-primary {
-  background: linear-gradient(90deg, #baf5f2, #47a595);
-  color: white;
-}
-
-.btn-secondary {
-  background: linear-gradient(90deg, #acadd6, #7e80da);
-  color: white;
-}
-
-.btn-danger {
-  background: linear-gradient(90deg, #fbb6b6, #e53e3e);
-  color: white;
-}
+.btn-primary { background: linear-gradient(90deg, #baf5f2, #47a595); color: white; }
+.btn-secondary { background: linear-gradient(90deg, #acadd6, #7e80da); color: white; }
+.btn-danger { background: linear-gradient(90deg, #fbb6b6, #e53e3e); color: white; }
 
 .btn-primary:hover:not(:disabled),
 .btn-secondary:hover:not(:disabled),
@@ -682,7 +731,8 @@ h2 {
 
 /* ── Responsivo ── */
 @media (max-width: 768px) {
-  .buscar-cita-card { padding: 1.5rem 1rem; }
+  .filtros-grid      { grid-template-columns: 1fr; }
+  .buscar-cita-card  { padding: 1.5rem 1rem; }
   .modal             { padding: 1.8rem 1.2rem; }
   .modal-grid        { grid-template-columns: 1fr; }
   .td-acciones       { flex-direction: column; }
