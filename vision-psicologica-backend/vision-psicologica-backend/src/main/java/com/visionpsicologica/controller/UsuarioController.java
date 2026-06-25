@@ -75,11 +75,23 @@ public class UsuarioController {
         String email = credentials.get("email");
         String contrasena = credentials.get("contrasena");
         boolean esValido = usuarioService.autenticar(email, contrasena);
+
         if (esValido) {
-            return ResponseEntity.ok().body(Map.of("message", "Autenticación exitosa"));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Email o contraseña incorrectos"));
+
+            Optional<UsuarioModel> usuarioOpt = usuarioService.findAllUsuarios().stream()
+                    .filter(u -> u.getEmail().equals(email))
+                    .findFirst();
+
+            if (usuarioOpt.isPresent()) {
+                UsuarioModel usuario = usuarioOpt.get();
+
+                return ResponseEntity.ok().body(Map.of(
+                        "message", "Autenticación exitosa",
+                        "id", usuario.getId()
+                ));
+            }
         }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Email o contraseña incorrectos"));
     }
 
     @PostMapping("/logout")

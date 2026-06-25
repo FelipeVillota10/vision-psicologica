@@ -9,6 +9,7 @@
       <div class="header-profile" @click="toggleProfileMenu">
         <span class="profile-icon">👤</span>
         <ul v-if="showProfileMenu" class="profile-menu" @click.stop>
+          <li @click="irAPerfil">Vea su perfil</li>
           <li class="logout-btn" @click="cerrarSesion">Cerrar Sesión</li>
         </ul>
       </div>
@@ -25,7 +26,7 @@
 
             <ul v-if="menus.citas" class="submenu" @click.stop>
               <li @click="cambiarVista('crearCita')">Crear Cita</li>
-              <li @click="cambiarVista('buscarCita')">Buscar Citas</li>  <!-- ← NUEVO -->
+              <li @click="cambiarVista('buscarCita')">Buscar Citas</li>
             </ul>
           </li>
 
@@ -57,7 +58,7 @@
               <span class="arrow">{{ menus.psicologos ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.psicologos" class="submenu" @click.stop>
-            <li @click="cambiarVista('psicologos')">Ver Psicólogos</li>
+              <li @click="cambiarVista('psicologos')">Ver Psicólogos</li>
             </ul>
           </li>
 
@@ -92,7 +93,8 @@
         <CrearCitaView v-else-if="vistaActual === 'crearCita'" />
         <BuscarCitaView v-else-if="vistaActual === 'buscarCita'" />
         <PsicologosView v-else-if="vistaActual === 'psicologos'" />
-
+        
+        <ConfiguracionUsuario v-else-if="vistaActual === 'configuracionUsuario'" />
 
         <div class="welcome-box" v-else>
           <h2>Panel de Control</h2>
@@ -129,12 +131,14 @@ import BuscarHistoriaView from './BuscarHistoriaView.vue'
 import CrearCitaView from './CrearCitaView.vue'
 import BuscarCitaView from './BuscarCitaView.vue'
 import PsicologosView from './PsicologosView.vue'
+// IMPORTACIÓN DEL NUEVO COMPONENTE
+import ConfiguracionUsuario from './ConfiguracionUsuarioView.vue'
 
 const router = useRouter()
 
 const vistaActual = ref('bienvenida')
 const showProfileMenu = ref(false)
-const totalPacientes = ref(0) // Estado numérico para la HU-29
+const totalPacientes = ref(0)
 
 const menus = ref({
   citas: false,
@@ -145,20 +149,18 @@ const menus = ref({
   afiliados: false,
 })
 
-// Función para cargar la métrica en tiempo real desde tu API
 const consultarTotalPacientes = async () => {
   try {
     const response = await fetch('http://localhost:8080/api/clientes')
     if (response.ok) {
       const clientes = await response.json()
-      totalPacientes.value = clientes.length // Asigna dinámicamente la cantidad (ej: 5)
+      totalPacientes.value = clientes.length
     }
   } catch (error) {
     console.error('Error al cargar métricas del dashboard:', error)
   }
 }
 
-// Cambiar de vista y forzar la recarga automática de métricas al regresar
 const cambiarVista = (vista: string) => {
   vistaActual.value = vista
   if (vista === 'bienvenida') {
@@ -174,6 +176,12 @@ const toggleMenu = (
 
 const toggleProfileMenu = () => {
   showProfileMenu.value = !showProfileMenu.value
+}
+
+// NUEVA FUNCIÓN PARA REDIRIGIR AL PERFIL
+const irAPerfil = () => {
+  cambiarVista('configuracionUsuario')
+  showProfileMenu.value = false // Oculta el menú desplegable tras hacer click
 }
 
 const cerrarSesion = async () => {
@@ -199,7 +207,6 @@ const cerrarSesion = async () => {
   }
 }
 
-// Hook de ciclo de vida para cargar el valor automáticamente al iniciar o recargar la pantalla
 onMounted(() => {
   consultarTotalPacientes()
 })

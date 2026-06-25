@@ -33,6 +33,14 @@ export const useAuthStore = defineStore('auth', {
 
         // Si el backend responde con éxito (Status 200)
         if (response.status === 200) {
+          // 💡 CAPTURAMOS EL ID: response.data contiene el JSON que manda tu backend
+          const datosUsuario = response.data
+
+          if (datosUsuario && datosUsuario.id) {
+            // Guardamos el ID en el localStorage convertido a string
+            localStorage.setItem('idUsuario', datosUsuario.id.toString())
+          }
+
           return true
         }
         return false

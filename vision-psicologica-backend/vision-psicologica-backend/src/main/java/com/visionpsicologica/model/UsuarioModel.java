@@ -35,8 +35,7 @@ public class UsuarioModel {
     @Column(name = "contrasena", nullable = false, length = 255)
     private String contrasena;
 
-    // Relación inversa: Un usuario puede tener muchos clientes
     @ManyToMany(mappedBy = "usuarios")
-    @JsonIgnore // Evita un bucle infinito al devolver el JSON en las peticiones
+    @JsonIgnore
     private List<ClienteModel> clientes;
 }

@@ -70,9 +70,7 @@
               <td>{{ historia.cliente?.nombre ?? 'Sin cliente' }}</td>
               <td>{{ formatearFecha(historia.fecha) }}</td>
               <td class="acciones">
-                <button type="button" class="btn-accion ver" @click="verHistoria(historia)">
-                  Ver
-                </button>
+                <button type="button" class="btn-accion ver" @click="ejecutarExportarPDF(historia.id)">Ver PDF</button>
                 <button type="button" class="btn-accion editar" @click="editarHistoria(historia)">
                   Modificar
                 </button>
@@ -83,33 +81,9 @@
             </tr>
           </tbody>
         </table>
-      </div>
-
-      <div v-if="historiaSeleccionada" class="resultado">
-        <h3>Historia seleccionada</h3>
-
-        <div class="dato">
-          <strong>Cliente:</strong>
-          <span>{{ historiaSeleccionada.cliente?.nombre ?? 'Sin dato' }}</span>
-        </div>
-
-        <div class="dato">
-          <strong>Fecha:</strong>
-          <span>{{ formatearFecha(historiaSeleccionada.fecha) }}</span>
-        </div>
-
-        <div class="dato">
-          <strong>ID Historia:</strong>
-          <span>{{ historiaSeleccionada.id ?? 'Sin dato' }}</span>
-        </div>
-
-        <div class="dato" v-if="historiaSeleccionada.observaciones">
-          <strong>Observaciones:</strong>
-          <span>{{ historiaSeleccionada.observaciones }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
+      </div> 
+    </div> 
+  </div> 
 </template>
 
 <script setup lang="ts">
@@ -201,8 +175,54 @@ const formatearFecha = (fecha?: string) => {
   return fecha.slice(0, 10)
 }
 
-const verHistoria = (historia: HistoriaClinica) => {
-  historiaSeleccionada.value = historia
+const verHistoria = async (historia: any) => {
+  if (!historia.id) {
+    mensajeError.value = 'No se puede consultar: la historia no tiene un ID válido.'
+    return
+  }
+
+  mensajeError.value = ''
+  cargando.value = true
+
+  // TRUCO: Abrimos la pestaña vacía INMEDIATAMENTE para que el navegador no la bloquee
+  const nuevaPestana = window.open('about:blank', '_blank');
+
+  try {
+    const response = await fetch(`http://localhost:8080/consulta/historia/${historia.id}`)
+    
+    if (!response.ok) {
+      throw new Error('Error al obtener la consulta asociada a esta historia.')
+    }
+
+    const consultas = await response.json()
+
+    if (!consultas || consultas.length === 0) {
+      // Si no hay consultas, cerramos la pestaña vacía y alertamos
+      if (nuevaPestana) nuevaPestana.close();
+      alert('Esta historia clínica aún no tiene ninguna consulta médica registrada.')
+      return
+    }
+
+    // CORRECCIÓN DEL ERROR DE TS Y REDIRECCIÓN:
+    // Si los datos existen, mandamos la pestaña directo al PDF del backend
+    if (nuevaPestana) {
+      nuevaPestana.location.href = `http://localhost:8080/consulta/historia/${historia.id}/pdf`;
+    }
+
+  } catch (error: any) {
+    // Si el servidor falla, cerramos la pestaña para no dejarla colgada en blanco
+    if (nuevaPestana) nuevaPestana.close();
+    mensajeError.value = error.message || 'Error al procesar la solicitud del PDF.'
+  } finally {
+    cargando.value = false
+  }
+}
+
+// Función borrador para el siguiente paso
+const ejecutarExportarPDF = (idHistoria: number) => {
+  console.log("Abriendo pestaña para generar el PDF de la historia:", idHistoria);
+  
+  window.open(`http://localhost:8080/consulta/historia/${idHistoria}/pdf`, '_blank');
 }
 
 const editarHistoria = (historia: HistoriaClinica) => {

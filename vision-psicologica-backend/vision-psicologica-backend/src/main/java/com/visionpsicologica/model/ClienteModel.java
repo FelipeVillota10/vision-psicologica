@@ -37,6 +37,9 @@ public class ClienteModel {
     @Column(name = "direccion", nullable = false, length = 150)
     private String direccion;
 
+    @Column(name = "acompañante", columnDefinition = "TEXT")
+    private String acompañante;
+
     // --- AQUÍ ESTÁ LA MAGIA DE LA TABLA INTERMEDIA ---
     @ManyToMany
     @JoinTable(
