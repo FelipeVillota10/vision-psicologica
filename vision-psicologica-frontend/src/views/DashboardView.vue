@@ -62,15 +62,7 @@
             </ul>
           </li>
 
-          <li class="menu-item" @click="toggleMenu('ordenamiento')">
-            <div class="menu-title">
-              <span class="menu-icon">📋</span> Ordenamiento
-              <span class="arrow">{{ menus.ordenamiento ? '▼' : '►' }}</span>
-            </div>
-            <ul v-if="menus.ordenamiento" class="submenu" @click.stop>
-              <li>Remisiones</li>
-            </ul>
-          </li>
+          
 
           <li class="menu-item" @click="toggleMenu('consultas')">
             <div class="menu-title">
@@ -150,7 +142,6 @@ const menus = ref({
   historias: false,
   clientes: false,
   psicologos: false,
-  ordenamiento: false,
   consultas: false,
 })
 
@@ -174,7 +165,7 @@ const cambiarVista = (vista: string) => {
 }
 
 const toggleMenu = (
-  menuName: 'citas' | 'historias' | 'clientes' | 'psicologos' | 'ordenamiento' | 'consultas',
+  menuName: 'citas' | 'historias' | 'clientes' | 'psicologos' | 'consultas',
 ) => {
   menus.value[menuName] = !menus.value[menuName]
 }

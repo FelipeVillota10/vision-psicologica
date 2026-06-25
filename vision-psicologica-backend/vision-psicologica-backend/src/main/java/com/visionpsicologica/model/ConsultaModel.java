@@ -49,4 +49,10 @@ public class ConsultaModel {
 
     @Column(name = "id_psicologo", nullable = false)
     private Long idPsicologo;
+
+    @Column(name = "requiere_remision")
+    private Boolean requiereRemision;
+
+    @Column(name = "especialidad_remision", columnDefinition = "TEXT")
+    private String especialidadRemision;
 }
