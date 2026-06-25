@@ -244,7 +244,8 @@ const abrirEdicion = (cliente: any) => {
 const abrirHistorialCitas = async (cliente: any) => {
   clienteSeleccionado.value = cliente
   try {
-    const response = await fetch(`http://localhost:8080/citas/cliente/${cliente.id}`)
+    // Se agregó /api/ a la ruta para que coincida con el resto de tus endpoints
+    const response = await fetch(`http://localhost:8080/api/citas/cliente/${cliente.id}`)
     if (response.ok) {
       historialCitas.value = await response.json()
       historialCitas.value.sort((a, b) => new Date(b.fechaInicio).getTime() - new Date(a.fechaInicio).getTime())
