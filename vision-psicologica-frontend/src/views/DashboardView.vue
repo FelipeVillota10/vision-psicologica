@@ -58,7 +58,8 @@
               <span class="arrow">{{ menus.psicologos ? '▼' : '►' }}</span>
             </div>
             <ul v-if="menus.psicologos" class="submenu" @click.stop>
-              <li @click="cambiarVista('psicologos')">Ver Psicólogos</li>
+              <li @click="cambiarVista('psicologos')">Ver Psicólogos</li> 
+              <li @click="cambiarVista('crearPsicologo')">Crear Psicólogo</li>
             </ul>
           </li>
 
@@ -85,6 +86,7 @@
         <CrearCitaView v-else-if="vistaActual === 'crearCita'" />
         <BuscarCitaView v-else-if="vistaActual === 'buscarCita'" />
         <PsicologosView v-else-if="vistaActual === 'psicologos'" />
+        <RegisterView v-else-if="vistaActual === 'crearPsicologo'" />
         
         <CrearConsultaView v-else-if="vistaActual === 'crearConsulta'" />
         <ModificarConsultaView v-else-if="vistaActual === 'modificarConsulta'" />
@@ -126,6 +128,7 @@ import BuscarHistoriaView from './BuscarHistoriaView.vue'
 import CrearCitaView from './CrearCitaView.vue'
 import BuscarCitaView from './BuscarCitaView.vue'
 import PsicologosView from './PsicologosView.vue'
+import RegisterView from './RegisterView.vue'
 // IMPORTACIÓN DEL NUEVO COMPONENTE
 import ConfiguracionUsuario from './ConfiguracionUsuarioView.vue'
 import CrearConsultaView from './CrearConsultaView.vue'

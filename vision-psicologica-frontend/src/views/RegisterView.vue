@@ -54,13 +54,6 @@
         <div class="button-group">
           <button type="submit" class="btn-create">Crear</button>
           <button type="button" class="btn-clear" @click="limpiarFormulario">Limpiar</button>
-          <button
-                type="button"
-                class="btn-home"
-                @click="router.push('/')"
-              >
-                Volver
-              </button>
         </div>
       </form>
     </div>
@@ -70,9 +63,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
+
+
 
 const authStore = useAuthStore()
 
@@ -118,11 +111,10 @@ const limpiarFormulario = () => {
 
 <style scoped>
 .register-container {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #e0f7f4 0%, #ede8fb 100%);
+  width: 100%;
   padding: 2rem;
   box-sizing: border-box;
 }

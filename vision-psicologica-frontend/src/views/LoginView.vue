@@ -39,16 +39,8 @@
             </RouterLink>
 
             <div class="lp-buttons">
-              <button type="submit" class="lp-btn lp-btn-sesion">
+              <button type="submit" class="lp-btn lp-btn-sesion" style="width: 100%;">
                 Iniciar Sesión
-              </button>
-
-              <button
-                type="button"
-                class="lp-btn lp-btn-registro"
-                @click="router.push('/registro')"
-              >
-                Registrar
               </button>
             </div>
           </form>
