@@ -46,4 +46,7 @@ public class ConsultaModel {
 
     @Column(name = "diagnostico", columnDefinition = "TEXT")
     private String diagnostico;
+
+    @Column(name = "id_psicologo", nullable = false)
+    private Long idPsicologo;
 }

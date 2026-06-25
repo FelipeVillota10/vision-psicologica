@@ -72,14 +72,14 @@
             </ul>
           </li>
 
-          <li class="menu-item" @click="toggleMenu('afiliados')">
+          <li class="menu-item" @click="toggleMenu('consultas')">
             <div class="menu-title">
-              <span class="menu-icon">🤝</span> Afiliados
-              <span class="arrow">{{ menus.afiliados ? '▼' : '►' }}</span>
+              <span class="menu-icon">🧑‍⚕️</span> Consultas
+              <span class="arrow">{{ menus.consultas ? '▼' : '►' }}</span>
             </div>
-            <ul v-if="menus.afiliados" class="submenu" @click.stop>
-              <li>Crear Afiliado</li>
-              <li>Buscar Afiliado</li>
+            <ul v-if="menus.consultas" class="submenu" @click.stop>
+              <li @click="cambiarVista('crearConsulta')">Crear Consulta</li>
+              <li @click="cambiarVista('modificarConsulta')">Modificar Consulta</li>
             </ul>
           </li>
         </ul>
@@ -93,6 +93,9 @@
         <CrearCitaView v-else-if="vistaActual === 'crearCita'" />
         <BuscarCitaView v-else-if="vistaActual === 'buscarCita'" />
         <PsicologosView v-else-if="vistaActual === 'psicologos'" />
+        
+        <CrearConsultaView v-else-if="vistaActual === 'crearConsulta'" />
+        <ModificarConsultaView v-else-if="vistaActual === 'modificarConsulta'" />
         
         <ConfiguracionUsuario v-else-if="vistaActual === 'configuracionUsuario'" />
 
@@ -133,6 +136,8 @@ import BuscarCitaView from './BuscarCitaView.vue'
 import PsicologosView from './PsicologosView.vue'
 // IMPORTACIÓN DEL NUEVO COMPONENTE
 import ConfiguracionUsuario from './ConfiguracionUsuarioView.vue'
+import CrearConsultaView from './CrearConsultaView.vue'
+import ModificarConsultaView from './ModificarConsultaView.vue'
 
 const router = useRouter()
 
@@ -146,7 +151,7 @@ const menus = ref({
   clientes: false,
   psicologos: false,
   ordenamiento: false,
-  afiliados: false,
+  consultas: false,
 })
 
 const consultarTotalPacientes = async () => {
@@ -169,7 +174,7 @@ const cambiarVista = (vista: string) => {
 }
 
 const toggleMenu = (
-  menuName: 'citas' | 'historias' | 'clientes' | 'psicologos' | 'ordenamiento' | 'afiliados',
+  menuName: 'citas' | 'historias' | 'clientes' | 'psicologos' | 'ordenamiento' | 'consultas',
 ) => {
   menus.value[menuName] = !menus.value[menuName]
 }
